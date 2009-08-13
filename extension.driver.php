@@ -4,7 +4,7 @@
 
 		public function about(){
 			return array('name' => 'Shell',
-						 'version' => '1.0',
+						 'version' => '0.1',
 						 'release-date' => '2009-08-13',
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://symphony-cms.com',
