@@ -1,4 +1,3 @@
-#!/Applications/MAMP/bin/php5/bin/php
 <?php
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
