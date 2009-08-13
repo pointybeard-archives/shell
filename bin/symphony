@@ -1,0 +1,81 @@
+#!/Applications/MAMP/bin/php5/bin/php
+<?php
+
+	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
+	define('DOMAIN', NULL);	
+
+	##Include the engine
+	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
+	require_once(EXTENSIONS . '/shell/lib/class.shell.php');
+
+	unset($argv[0]);
+	
+	if(count($argv) == 0 || in_array('--usage', $argv)){
+		echo "usage: symphony [-t token] extension command [OPTIONS]
+	runs command provided via extension
+	
+options:
+	-t	authentication token. Can be enabled via Symphony author 
+		profile. Not all extensions require authentication. Check
+		individual extention commands for usage.
+
+
+examples:
+	symphony -t 4141e465 shell test
+
+";
+		
+		exit();
+	}
+	
+	$extension = $command = NULL;
+	$args = array();
+	$options = array();
+	$inOption = false;
+	
+	foreach($argv as $item){
+		if($item{0} == '-' && is_null($extension)){
+			$inOption = true;
+			$key = ltrim($item, '-');
+		}
+		elseif($inOption == true){
+			$options[$key] = $item;
+			$inOption = false;
+		}
+		
+		elseif(is_null($extension)){
+			$extension = $item;
+		}
+		
+		elseif(is_null($command)){
+			$command = $item;
+		}		
+		
+		else{
+			$args[] = $item;
+		}
+	}
+
+	
+	
+	$options = (object)$options;
+
+	if(isset($options->t)){
+		
+		Shell::instance()->loginFromToken($options->t);
+
+		if(!Shell::instance()->isLoggedIn()){
+			throw new Exception('Error logging in. Authentication token supplied was invalid.');
+		}		
+	}
+	
+	$path = EXTENSIONS . '/' . $extension . '/bin/'. $command;
+	if($path == __FILE__){
+		throw new Exception('Cannot run "symphony" as shell command.');
+	}
+	
+	$classname = require_once(EXTENSIONS . '/' . $extension . '/bin/'. $command);
+	$obj = new $classname;
+	
+	$obj->run();
+

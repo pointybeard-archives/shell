@@ -1,0 +1,18 @@
+<?php
+
+	Class Test extends ShellCommand{
+		public function run(){
+			
+			if(!Shell::instance()->isLoggedIn()){
+				throw new Exception('Valid authentication token must be supplied.');
+			}
+			
+			if(!Shell::instance()->Author->isDeveloper()){
+				throw new Exception('Only developers can run the test command');
+			}			
+			
+			print "Hi there. I am the 'test' command. Awesome I am.\n";
+		}
+	}
+	
+	return 'Test';
