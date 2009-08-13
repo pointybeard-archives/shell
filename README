@@ -21,13 +21,13 @@ release was 2.0.6.
 
 [INSTALLATION]
 
-** Note: The latest version can alway be grabbed with "git clone git://github.com/symphony/shell.git"
+** Note: The latest version can alway be grabbed with "git clone git://github.com/pointybeard/shell.git"
 
 1. Upload the 'shell' folder in this archive to your Symphony 'extensions' folder.
 
 2. Enable it by selecting the "Shell", choose Enable from the with-selected menu, then click Apply.
 
-
+(Note: at this point, enabling the extension in Symphony does not do anything)
 
 
 3.1 (Optional) Edit /extensions/shell/bin/symphony, setting the very first line as the path to the PHP executable. E.G.	
@@ -65,4 +65,5 @@ or, depending on your setup, just
 
 	- Streamline the installation process
 	- Make the README clearer
+	- Enabling/Disabling the extension in Symphony admin should have some effect.
 	
