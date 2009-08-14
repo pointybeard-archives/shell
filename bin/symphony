@@ -3,21 +3,27 @@
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', NULL);	
 
-	##Include the engine
+	// Include the engine
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(EXTENSIONS . '/shell/lib/class.shell.php');
 
+	// Make sure the Shell has been initialised
+	Shell::instance();
+
 	unset($argv[0]);
 	
-	if(count($argv) == 0 || in_array('--usage', $argv)){
-		echo "usage: symphony [-t token] extension command [OPTIONS]
-	runs command provided via extension
+	if($argv[0] == '--usage'){
+		echo "usage: symphony [-t token] extension [command] [OPTIONS]
+	runs command provided via extension. 
+	
+	Should command be omitted, a list of commands available for that 
+	extension is displayed instead. Leaving out both command and extension
+	will give a list of all commands available in the system.
 	
 options:
 	-t	authentication token. Can be enabled via Symphony author 
 		profile. Not all extensions require authentication. Check
-		individual extention commands for usage.
-
+		individual extension commands for usage.
 
 examples:
 	symphony -t 4141e465 shell test
@@ -25,6 +31,22 @@ examples:
 ";
 		
 		exit();
+	}
+	elseif(count($argv) == 0){
+		echo "Below is a list of all available commands (use --usage 
+for details on executing a command):
+	
+";
+
+		foreach(Shell::listCommands() as $name => $commands){
+			echo "   {$name}\n   ==========\n";
+			foreach($commands as $c){
+				echo "      {$c}\n";
+			}
+			echo "\n";
+		}
+	
+		exit;
 	}
 	
 	$extension = $command = NULL;
@@ -55,7 +77,22 @@ examples:
 		}
 	}
 
-	
+	if(is_null($command)){
+		
+		echo "Below is a list of all available commands for 
+the extension {$extension}. (use --usage for details on 
+executing individual commands):
+
+";
+
+		foreach(Shell::listCommands($extension) as $c){
+			echo "   {$c}\n";
+		}
+
+		echo "\n";
+
+		exit;
+	}
 	
 	$options = (object)$options;
 
@@ -75,6 +112,11 @@ examples:
 	
 	$classname = require_once(EXTENSIONS . '/' . $extension . '/bin/'. $command);
 	$obj = new $classname;
-	
-	$obj->run();
+		
+	if(in_array('--usage', $args)){
+		echo $obj->usage() . "\n";
+		exit;
+	}
+
+	$obj->run($args);
 
