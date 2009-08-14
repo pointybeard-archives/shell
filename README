@@ -1,9 +1,9 @@
 Symphony Shell
 ------------------------------------
 
-Version: 0.1 (alpha build)
+Version: 0.2 (alpha build)
 Author: Alistair Kearney (alistair@symphony-cms.com)
-Build Date: 13th July 2009
+Build Date: 14th July 2009
 Requirements: Symphony 2.0.7 or greater
 
 
@@ -60,6 +60,15 @@ or, depending on your setup, just
 
 	symphony --usage
 	
+
+[CHANGE LOG]
+
+	0.2	-	adding --usage after a command will trigger that commands usage() function
+		-	added Shell::listCommands([$extension]) function for listing commands in the system
+		-	omitting a command will list all the commands available for that extension
+		-	omitting both extension and command will list all commands in the system
+		-	added "deny from all" .htaccess directive to the bin/ folder
+		-	'test' command implements ShellCommand::usage()
 	
 [TODO]
 
