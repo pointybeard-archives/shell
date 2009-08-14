@@ -1,7 +1,12 @@
 <?php
 
 	Class Test extends ShellCommand{
-		public function run(){
+		
+		public function usage(){
+			return "This is the test command that ships with the shell extension.\n";
+		}
+		
+		public function run(array $args=NULL){
 			
 			if(!Shell::instance()->isLoggedIn()){
 				throw new Exception('Valid authentication token must be supplied.');
