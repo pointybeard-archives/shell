@@ -10,10 +10,10 @@
 	// Make sure the Shell has been initialised
 	Shell::instance();
 
-	unset($argv[0]);
-	
+	array_shift($argv);
+
 	if($argv[0] == '--usage'){
-		echo "usage: symphony [-t token] extension [command] [OPTIONS]
+		echo "usage: symphony [OPTIONS] extension [command] [args]
 	runs command provided via extension. 
 	
 	Should command be omitted, a list of commands available for that 
@@ -24,9 +24,15 @@ options:
 	-t	authentication token. Can be enabled via Symphony author 
 		profile. Not all extensions require authentication. Check
 		individual extension commands for usage.
+		
+	-u	User for login. Instead of using -t, it is possible
+		to be authenticated with username and password. If -u is
+		specified, password will be prompted for.
+				
 
 examples:
 	symphony -t 4141e465 shell test
+	symphony -u fred shell test
 
 ";
 		
@@ -95,19 +101,37 @@ executing individual commands):
 	}
 	
 	$options = (object)$options;
-
-	if(isset($options->t)){
+	if(isset($options->u) && isset($options->t)){
+		fputs(STDERR, "Does not make sense to specify both -t and -u.\n");
+		exit(1);
+	}
+	elseif(isset($options->t)){
 		
 		Shell::instance()->loginFromToken($options->t);
 
 		if(!Shell::instance()->isLoggedIn()){
-			throw new Exception('Error logging in. Authentication token supplied was invalid.');
+			fputs(STDERR, "Error logging in. Authentication token supplied was invalid.\n");
+			exit(1);
 		}		
+	}
+	
+	elseif(isset($options->u)){
+		fputs(STDOUT, 'Enter Password: ');
+		$password = trim(fgets(STDIN, 256));
+		
+		Shell::instance()->login($options->u, $password);
+
+		if(!Shell::instance()->isLoggedIn()){
+			fputs(STDERR, "Error logging in. Username and/or password were incorrect.\n");
+			exit(1);
+		}
+		
 	}
 	
 	$path = EXTENSIONS . '/' . $extension . '/bin/'. $command;
 	if($path == __FILE__){
-		throw new Exception('Cannot run "symphony" as shell command.');
+		fputs(STDERR, "Cannot run 'symphony' as shell command.\n");
+		exit(1);
 	}
 	
 	$classname = require_once(EXTENSIONS . '/' . $extension . '/bin/'. $command);

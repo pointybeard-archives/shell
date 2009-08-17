@@ -1,9 +1,9 @@
 Symphony Shell
 ------------------------------------
 
-Version: 0.2 (alpha build)
+Version: 0.3 (alpha build)
 Author: Alistair Kearney (alistair@symphony-cms.com)
-Build Date: 14th July 2009
+Build Date: 18th July 2009
 Requirements: Symphony 2.0.7 or greater
 
 
@@ -62,7 +62,10 @@ or, depending on your setup, just
 	
 
 [CHANGE LOG]
-
+	
+	0.3	-	Fixed bug that ignored the --usage flag
+		-	Added username (-u) option, which can be used instead of -t
+	
 	0.2	-	adding --usage after a command will trigger that commands usage() function
 		-	added Shell::listCommands([$extension]) function for listing commands in the system
 		-	omitting a command will list all the commands available for that extension
@@ -70,8 +73,14 @@ or, depending on your setup, just
 		-	added "deny from all" .htaccess directive to the bin/ folder
 		-	'test' command implements ShellCommand::usage()
 	
-[TODO]
+[ISSUES]
 
+	When using the -u flag, the password is read from STDIN and echo'd back to the CLI. There are bugs 
+	in PHP (http://bugs.php.net/bug.php?id=34972) which prevent hiding the input.
+	
+	
+[TODO]
+	
 	- Streamline the installation process
 	- Make the README clearer
 	- Enabling/Disabling the extension in Symphony admin should have some effect.
