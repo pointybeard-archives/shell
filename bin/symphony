@@ -1,12 +1,13 @@
+#!/Applications/MAMP/bin/php5/bin/php
 <?php
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', NULL);	
 
 	// Include the engine
-	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
+	require_once(DOCROOT . '/symphony/bundle.php');
 	require_once(EXTENSIONS . '/shell/lib/class.shell.php');
-
+	
 	// Make sure the Shell has been initialised
 	Shell::instance();
 
@@ -15,33 +16,34 @@
 	if($argv[0] == '--usage'){
 		echo "usage: symphony [OPTIONS] extension [command] [args]
 	runs command provided via extension. 
-	
+
 	Should command be omitted, a list of commands available for that 
 	extension is displayed instead. Leaving out both command and extension
 	will give a list of all commands available in the system.
-	
+
 options:
-	-t	authentication token. Can be enabled via Symphony author 
+	-t
+		authentication token. Can be enabled via Symphony user 
 		profile. Not all extensions require authentication. Check
 		individual extension commands for usage.
-		
-	-u	User for login. Instead of using -t, it is possible
+	
+	-u
+		User for login. Instead of using -t, it is possible
 		to be authenticated with username and password. If -u is
 		specified, password will be prompted for.
-				
 
 examples:
 	symphony -t 4141e465 shell test
 	symphony -u fred shell test
 
 ";
-		
+	
 		exit();
 	}
 	elseif(count($argv) == 0){
 		echo "Below is a list of all available commands (use --usage 
 for details on executing a command):
-	
+
 ";
 
 		foreach(Shell::listCommands() as $name => $commands){
@@ -51,15 +53,15 @@ for details on executing a command):
 			}
 			echo "\n";
 		}
-	
+
 		exit;
 	}
-	
+
 	$extension = $command = NULL;
 	$args = array();
 	$options = array();
 	$inOption = false;
-	
+
 	foreach($argv as $item){
 		if($item{0} == '-' && is_null($extension)){
 			$inOption = true;
@@ -69,22 +71,22 @@ for details on executing a command):
 			$options[$key] = $item;
 			$inOption = false;
 		}
-		
+	
 		elseif(is_null($extension)){
 			$extension = $item;
 		}
-		
+	
 		elseif(is_null($command)){
 			$command = $item;
 		}		
-		
+	
 		else{
 			$args[] = $item;
 		}
 	}
 
 	if(is_null($command)){
-		
+	
 		echo "Below is a list of all available commands for 
 the extension {$extension}. (use --usage for details on 
 executing individual commands):
@@ -99,14 +101,14 @@ executing individual commands):
 
 		exit;
 	}
-	
+
 	$options = (object)$options;
 	if(isset($options->u) && isset($options->t)){
 		fputs(STDERR, "Does not make sense to specify both -t and -u.\n");
 		exit(1);
 	}
 	elseif(isset($options->t)){
-		
+
 		Shell::instance()->loginFromToken($options->t);
 
 		if(!Shell::instance()->isLoggedIn()){
@@ -114,33 +116,33 @@ executing individual commands):
 			exit(1);
 		}		
 	}
-	
+
 	elseif(isset($options->u)){
 		fputs(STDOUT, 'Enter Password: ');
 		$password = trim(fgets(STDIN, 256));
-		
+	
 		Shell::instance()->login($options->u, $password);
 
 		if(!Shell::instance()->isLoggedIn()){
 			fputs(STDERR, "Error logging in. Username and/or password were incorrect.\n");
 			exit(1);
 		}
-		
-	}
 	
+	}
+
 	$path = EXTENSIONS . '/' . $extension . '/bin/'. $command;
 	if($path == __FILE__){
 		fputs(STDERR, "Cannot run 'symphony' as shell command.\n");
 		exit(1);
 	}
-	
+
 	$classname = require_once(EXTENSIONS . '/' . $extension . '/bin/'. $command);
 	$obj = new $classname;
-		
+	
 	if(in_array('--usage', $args)){
 		echo $obj->usage() . "\n";
 		exit;
 	}
 
 	$obj->run($args);
-
+	

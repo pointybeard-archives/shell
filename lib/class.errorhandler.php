@@ -1,5 +1,8 @@
 <?php
 	
+	Class ShellException extends Exception{
+	}	
+		
 	Class ShellExceptionHandler extends GenericExceptionHandler{
 
 		public static function initialise(){

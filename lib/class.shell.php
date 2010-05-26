@@ -1,11 +1,11 @@
 <?php
 
-	require_once(CORE . '/class.symphony.php');
-	require_once(TOOLKIT . '/class.lang.php');
-	require_once(CORE . '/class.log.php');
+	require_once(LIB . '/class.symphony.php');
+	require_once(LIB . '/class.lang.php');
+	require_once(LIB . '/class.log.php');
 	
-	require_once(EXTENSIONS . '/shell/lib/class.shellcommand.php');
-	require_once(EXTENSIONS . '/shell/lib/class.errorhandler.php');	
+	require_once('class.shellcommand.php');
+	require_once('class.errorhandler.php');
 	
 	Class Shell extends Symphony{
 		
@@ -18,10 +18,7 @@
 
 		protected function __construct(){
 			parent::__construct();
-			
 			ShellExceptionHandler::initialise();
-			
-			$this->Profiler->sample('Engine Initialisation (Shell Mode)');
 		}
 		
 		public static function listCommands($extension=NULL){
@@ -29,29 +26,30 @@
 			$extensions = array();
 			
 			if(is_null($extension)){
-				foreach (new DirectoryIterator(EXTENSIONS) as $fileInfo) {
-				    if($fileInfo->isDir() && !$fileInfo->isDot() && is_dir($fileInfo->getPathname() . '/bin')){
-						$extensions[$fileInfo->getFilename()] = array();
+				foreach(new ExtensionIterator(ExtensionIterator::FLAG_STATUS, Extension::STATUS_ENABLED) as $e){
+					$path = Extension::getPathFromClass(get_class($e));
+					$handle = Extension::getHandleFromPath($path);
+
+					if(is_dir("{$path}/bin")){
+						$extensions[$handle] = array();
 					}
 				}
 			}
 			else{
 				
 				if(!is_dir(EXTENSIONS . "/{$extension}/bin")){
-					throw new Exception('Could not locate any commands for extension. ' . "'{$extension}/bin' directory does not exist.");
+					throw new ShellException('Could not locate any commands for extension. ' . "'{$extension}/bin' directory does not exist.");
 				}
 				
 				$extensions[$extension] = array();
 			}
 			
-			foreach($extensions as $name => $commands){
-				foreach (new DirectoryIterator(EXTENSIONS . "/{$name}/bin") as $fileInfo) {
-					
-					if($name == 'shell' && $fileInfo->getFilename() == 'symphony') continue;
-					
-					if(!$fileInfo->isDir() && !$fileInfo->isDot() && substr($fileInfo->getFilename(), 0, 1) != '.'){
-						$extensions[$name][] = $fileInfo->getFilename();
-					}
+			foreach(array_keys($extensions) as $handle){
+				$scripts = glob(EXTENSIONS . "/{$handle}/bin/*");
+				foreach($scripts as $s){
+					$name = basename($s);
+					if(($handle == 'shell' && $name == 'symphony') || $name{0} == '.') continue;
+					$extensions[$handle][] = basename($name);
 				}
 			}
 			

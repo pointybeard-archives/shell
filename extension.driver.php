@@ -1,15 +1,17 @@
 <?php
 
-	Class extension_Shell extends Extension{
+	Class extension_Shell implements iExtension{
 
 		public function about(){
-			return array('name' => 'Shell',
+			return (object)array('name' => 'Shell',
 						 'version' => '0.3',
 						 'release-date' => '2009-08-18',
-						 'author' => array('name' => 'Alistair Kearney',
+						 'author' => (object)array('name' => 'Alistair Kearney',
 										   'website' => 'http://symphony-cms.com',
 										   'email' => 'alistair@symphony-cms.com')
 				 		);
 		}
 		
 	}
+	
+	return 'extension_Shell';
