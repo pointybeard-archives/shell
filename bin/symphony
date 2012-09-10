@@ -1,11 +1,11 @@
-#!/Applications/MAMP/bin/php5/bin/php
+#!/opt/local/bin/php54
 <?php
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', NULL);	
 
 	// Include the engine
-	require_once(DOCROOT . '/symphony/bundle.php');
+	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(EXTENSIONS . '/shell/lib/class.shell.php');
 	
 	// Make sure the Shell has been initialised

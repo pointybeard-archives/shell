@@ -1,8 +1,8 @@
 <?php
 
-	require_once(LIB . '/class.symphony.php');
-	require_once(LIB . '/class.lang.php');
-	require_once(LIB . '/class.log.php');
+	require_once(CORE . '/class.symphony.php');
+	require_once(TOOLKIT . '/class.lang.php');
+	require_once(CORE . '/class.log.php');
 	
 	require_once('class.shellcommand.php');
 	require_once('class.errorhandler.php');

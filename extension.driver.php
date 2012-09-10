@@ -1,8 +1,8 @@
 <?php
 
-	Class extension_Shell implements iExtension{
+	Class extension_Shell extends Extension{
 
-		public function about(){
+		/*public function about(){
 			return (object)array('name' => 'Shell',
 						 'version' => '0.3',
 						 'release-date' => '2009-08-18',
@@ -10,8 +10,8 @@
 										   'website' => 'http://symphony-cms.com',
 										   'email' => 'alistair@symphony-cms.com')
 				 		);
-		}
+		}*/
 		
 	}
 	
-	return 'extension_Shell';
+	
