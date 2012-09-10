@@ -26,11 +26,10 @@
 			$extensions = array();
 			
 			if(is_null($extension)){
-				foreach(new ExtensionIterator(ExtensionIterator::FLAG_STATUS, Extension::STATUS_ENABLED) as $e){
-					$path = Extension::getPathFromClass(get_class($e));
-					$handle = Extension::getHandleFromPath($path);
-
-					if(is_dir("{$path}/bin")){
+				foreach(ExtensionManager::fetch() as $handle => $about){
+					if(!in_array(EXTENSION_ENABLED, $about['status'])) continue;
+					
+					if(is_dir(ExtensionManager::__getClassPath($handle) . '/bin')){
 						$extensions[$handle] = array();
 					}
 				}
