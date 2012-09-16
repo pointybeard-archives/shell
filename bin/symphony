@@ -61,11 +61,15 @@ for details on executing a command):
 	$args = array();
 	$options = array();
 	$inOption = false;
+            
+
 
 	foreach($argv as $item){
+		
 		if($item{0} == '-' && is_null($extension)){
 			$inOption = true;
 			$key = ltrim($item, '-');
+			array_shift($argv);
 		}
 		elseif($inOption == true){
 			$options[$key] = $item;
@@ -78,11 +82,12 @@ for details on executing a command):
 	
 		elseif(is_null($command)){
 			$command = $item;
-		}		
-	
+		}	
+		
 		else{
 			$args[] = $item;
-		}
+		}	
+		
 	}
 
 	if(is_null($command)){

@@ -21,6 +21,37 @@
 			ShellExceptionHandler::initialise();
 		}
 		
+		public static function cleanArguments(array $args){
+			$command = NULL;
+			$options = array();
+			$inOption = false;
+
+			foreach($args as $item){
+				
+				if($item{0}.$item{1} == '--'){
+					$bits = preg_split('/=/', $item, 2);
+					$key = ltrim($bits[0], '-');
+					$options[$key] = $bits[1];
+				}
+				
+				elseif($item{0} == '-'){
+					$inOption = true;
+					$key = ltrim($item, '-');
+				}
+				
+				elseif($inOption == true){
+					$options[$key] = $item;
+					$inOption = false;
+				}
+
+				else{
+					$options[] = $item;
+				}
+			}
+			
+			return $options;
+		}
+		
 		public static function listCommands($extension=NULL){
 			
 			$extensions = array();
