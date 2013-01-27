@@ -21,6 +21,46 @@
 			ShellExceptionHandler::initialise();
 		}
 		
+		/**
+		 * Overload the Symphony::login function to bypass some code that
+		 * forces use of the Administration class (which of course is not
+		 * available in Shell). Hopefully this is fixed in the core Symphony code
+		 *
+		 */
+		public function login($username, $password, $isHash=false){
+			$username = self::Database()->cleanValue($username);
+			$password = self::Database()->cleanValue($password);
+
+			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
+
+				$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
+						`username` = '%s'
+					", $username
+				));
+
+				if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
+					$this->Author = current($author);
+
+					// Only migrate hashes if there is no update available as the update might change the tbl_authors table.
+					if(Cryptography::requiresMigration($this->Author->get('password'))){
+						throw new ShellException('User details require updating. Please login to the admin interface.');
+					}
+
+					$this->Cookie->set('username', $username);
+					$this->Cookie->set('pass', $this->Author->get('password'));
+					self::Database()->update(array(
+						'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						'tbl_authors',
+						sprintf(" `id` = %d", $this->Author->get('id'))
+					);
+
+					return true;
+				}
+			}
+
+			return false;
+		}
+		
 		public static function cleanArguments(array $args){
 			$command = NULL;
 			$options = array();
