@@ -1,4 +1,4 @@
-#!/opt/local/bin/php54
+#!/usr/bin/env php
 <?php
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
