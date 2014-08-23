@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension id="shell" status="alpha" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+<extension id="shell" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
 	<name>Shell</name>
 	<description>Framework for accessing Symphony via the command line</description>
 	<repo type="github">https://github.com/pointybeard/shell</repo>
@@ -14,6 +14,13 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.0" date="2014-09-23" min="2.4" max="2.4">
+			- Checked compatiblity with Symphony 2.4+
+			- Using namespaces.
+			- Updated command API.
+			- Using SPL autoloader for all extension classes and loading commands from other extensions
+			- Updated argument structure. Requires -c and -e before the command and extension values
+		</release>
 		<release version="0.4" date="2012-09-10" min="2.3.1beta2" max="2.4">
 			- Added support for Symphony 2.3.x
 		</release>

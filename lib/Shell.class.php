@@ -4,10 +4,6 @@
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(CORE . '/class.log.php');
 
-	require_once('class.shellcommand.php');
-	require_once('class.errorhandler.php');
-	require_once('cliargs.class.php');
-
 	Class Shell extends Symphony{
 
 		private $_CLIArgs;
@@ -21,8 +17,13 @@
 
 		protected function __construct(){
 			parent::__construct();
-			ShellExceptionHandler::initialise();
-			$this->__CLIArgs = new CLIArgs;
+			\Shell\Lib\ExceptionHandler::initialise();
+			$this->_CLIArgs = new \Shell\Lib\CLIArguments;
+		}
+
+		public function __get($name){
+			if(!isset($this->{"_{$name}"})) return false;
+			return $this->{"_{$name}"};
 		}
 
 		/**

@@ -1,95 +1,122 @@
 #!/usr/bin/env php
 <?php
-	
+
+	function autoloadShellCommands($className){
+		if(preg_match_all('/^Shell\\\\Command\\\\([^\\\\]+)\\\\(.+)$/i', $className, $matches) == 1){
+			$command = $matches[2][0];
+			$extension = $matches[1][0];
+			$file = EXTENSIONS . "/{$extension}/bin/{$command}";
+			if (is_readable($file)) {
+				require $file;
+			}
+		}
+
+		return;
+	}
+
+	function autoloadShellLib($className){
+		$className = ltrim($className, '\\');
+		$file = $namespace = NULL;
+
+		if ($lastNsPos = strripos($className, '\\')) {
+			$namespace = substr($className, 0, $lastNsPos);
+			$className = substr($className, $lastNsPos + 1);
+			$path  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+		}
+
+		$path = EXTENSIONS . DIRECTORY_SEPARATOR . strtolower($path);
+
+		// Class
+		$file = str_replace('_', DIRECTORY_SEPARATOR, $className) . '.class.php';
+		if(is_readable($path . DIRECTORY_SEPARATOR . $file)){
+			require $path . DIRECTORY_SEPARATOR . $file;
+			return;
+		}
+
+		// Interface
+		$file = str_replace('_', DIRECTORY_SEPARATOR, $className) . '.interface.php';
+		if(is_readable($path . DIRECTORY_SEPARATOR . $file)){
+			require $path . DIRECTORY_SEPARATOR . $file;
+			return;
+		}
+	}
+
+	spl_autoload_register("autoloadShellCommands");
+	spl_autoload_register("autoloadShellLib");
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', NULL);
 
 	// Include the engine
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
-	require_once(EXTENSIONS . '/shell/lib/class.shell.php');
+	require_once(EXTENSIONS . '/shell/lib/Shell.class.php');
 
-	// Make sure the Shell has been initialised
-	Shell::instance();
-
+	// The first item in CLI args is just the path to this file, so ignore it.
 	array_shift($argv);
 
-	if($argv[0] == '--usage'){
-		echo "usage: symphony [OPTIONS] extension [command] [args]
+	try {
+
+		// Make sure the Shell has been initialised
+		$engine = Shell::instance();
+		$args = $engine->CLIArgs;
+
+		$extension = NULL;
+		if($args->find('e') !== false) $extension = $args->find('e')->value;
+		elseif($args->find('extension') !== false) $extension = $args->find('extension')->value;
+
+		$command = NULL;
+		if($args->find('c') !== false) $command = $args->find('c')->value;
+		elseif($args->find('command') !== false) $command = $args->find('command')->value;
+
+		if(count($argv) == 0){
+			echo "Below is a list of all available commands (use --usage
+for details on executing a command):" . PHP_EOL . PHP_EOL;
+
+			foreach(Shell::listCommands() as $name => $commands){
+				echo "   {$name}" . PHP_EOL . "   ==========" . PHP_EOL;
+				foreach($commands as $c){
+					echo "      {$c}" . PHP_EOL;
+				}
+				echo PHP_EOL;
+			}
+
+			exit;
+		}
+
+		elseif(is_null($extension) && $args->find('usage') !== false){
+			echo "	usage: symphony [OPTION...] -e EXTENSION -c COMMAND [args]
 	runs command provided via extension.
 
 	Should command be omitted, a list of commands available for that
 	extension is displayed instead. Leaving out both command and extension
 	will give a list of all commands available in the system.
 
-options:
-	-t
-		authentication token. Can be enabled via Symphony user
-		profile. Not all extensions require authentication. Check
-		individual extension commands for usage.
+	options:
+		-t
+			authentication token. Can be enabled via Symphony user
+			profile. Not all extensions require authentication. Check
+			individual extension commands for usage.
 
-	-u
-		User for login. Instead of using -t, it is possible
-		to be authenticated with username and password. If -u is
-		specified, password will be prompted for.
+		-u
+			User for login. Instead of using -t, it is possible
+			to be authenticated with username and password. If -u is
+			specified, password will be prompted for.
 
-examples:
-	symphony -t 4141e465 shell test
-	symphony -u fred shell test
+		-e, --extension
+			Must specifiy the Symphony extension that provides the
+			desired command.
 
-";
+		-c, --command
+			The command you wish to run.
 
-		exit();
-	}
-	elseif(count($argv) == 0){
-		echo "Below is a list of all available commands (use --usage
-for details on executing a command):
+	examples:
+		symphony -t 4141e465 -e shell -c test
+		symphony -u fred --extension=shell --command=test" . PHP_EOL;
 
-";
-
-		foreach(Shell::listCommands() as $name => $commands){
-			echo "   {$name}\n   ==========\n";
-			foreach($commands as $c){
-				echo "      {$c}\n";
-			}
-			echo "\n";
+			exit();
 		}
 
-		exit;
-	}
 
-	$extension = $command = NULL;
-	$args = array();
-	$options = array();
-	$inOption = false;
-
-	foreach($argv as $item){
-
-		if($item{0} == '-' && is_null($extension)){
-			$inOption = true;
-			$key = ltrim($item, '-');
-			array_shift($argv);
-		}
-		elseif($inOption == true){
-			$options[$key] = $item;
-			$inOption = false;
-		}
-
-		elseif(is_null($extension)){
-			$extension = $item;
-		}
-
-		elseif(is_null($command)){
-			$command = $item;
-		}
-
-		else{
-			$args[] = $item;
-		}
-
-	}
-
-	try {
 		if(is_null($extension)){
 			throw new ShellException("No extension specified. A extension must be specified. See --usage for help.");
 		}
@@ -109,25 +136,22 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
 			exit;
 		}
 
-
-		$options = (object)$options;
-		var_dump($options); die();
-		if(isset($options->u) && isset($options->t)){
+		if($args->find('u') !== false && $args->find('t') !== false){
 			throw new ShellException("Does not make sense to specify both -t and -u.");
 		}
 
-		elseif(isset($options->t)){
-			Shell::instance()->loginFromToken($options->t);
+		elseif($args->find('t') !== false){
+			Shell::instance()->loginFromToken($args->find('t')->value);
 			if(!Shell::instance()->isLoggedIn()){
 				throw new ShellException("Error logging in. Authentication token supplied was invalid.");
 			}
 		}
 
-		elseif(isset($options->u)){
+		elseif($args->find('u') !== false){
 			fputs(STDOUT, 'Password: ');
 			$password = trim(fgets(STDIN, 256));
 
-			Shell::instance()->login($options->u, $password);
+			Shell::instance()->login($args->find('u')->value, $password);
 			if(!Shell::instance()->isLoggedIn()){
 				throw new ShellException("Error logging in. Username and/or password were incorrect.");
 			}
@@ -138,18 +162,21 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
 			throw new ShellException("Cannot run 'symphony' as shell command.");
 		}
 
+		elseif(!file_exists($path) || !is_readable($path)){
+			throw new ShellException("Specified command file, '{$extension}/bin/{$command}', is either non-existent or unreadable.");
+		}
+
+		$class = "\Shell\Command\\$extension\\$command";
+		$obj = new $class;
 
 	} catch (ShellException $e) {
 		fputs(STDERR, $e->getMessage() . PHP_EOL);
 		exit(1);
 	}
 
-	$classname = require_once(EXTENSIONS . '/' . $extension . '/bin/'. $command);
-	$obj = new $classname;
-
-	if(in_array('--usage', $args)){
-		echo $obj->usage() . "\n";
+	if($args->find('usage') !== false){
+		echo $obj->usage() . PHP_EOL;
 		exit;
 	}
 
-	$obj->run($args);
+	$obj->run();

@@ -1,9 +1,12 @@
 <?php
+	namespace Shell\Lib;
+	use \Exception;
+	use \GenericExceptionHandler;
 
 	Class ShellException extends Exception{
 	}
 
-	Class ShellExceptionHandler extends GenericExceptionHandler{
+	Class ExceptionHandler extends GenericExceptionHandler{
 
 		public static function initialise(){
 			self::$enabled = true;
@@ -58,9 +61,9 @@
 			}
 
 			$queries = NULL;
-			if(is_object(Symphony::Database())){
+			if(is_object(\Symphony::Database())){
 
-				$debug = Symphony::Database()->debug();
+				$debug = \Symphony::Database()->debug();
 
 				if(count($debug['query']) > 0){
 					foreach($debug['query'] as $query){
