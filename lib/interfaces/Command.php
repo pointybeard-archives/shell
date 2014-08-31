@@ -1,5 +1,5 @@
 <?php
-	namespace Shell\Lib;
+	namespace Shell\Lib\Interfaces;
 	interface Command{
 		public function run();
 		public function usage();

@@ -10,6 +10,7 @@
 
 		public static function initialise(){
 			self::$enabled = true;
+			restore_exception_handler();
 			set_exception_handler(array(__CLASS__, 'handler'));
 		}
 
@@ -49,15 +50,17 @@
 
 			$trace = NULL;
 
-			foreach($e->getTrace() as $t){
-				$trace .= sprintf(
-					'[%s:%d] %s%s%s();' . "\n",
-					(isset($t['file']) ? $t['file'] : NULL),
-					(isset($t['line']) ? $t['line'] : NULL),
-					(isset($t['class']) ? $t['class'] : NULL),
-					(isset($t['type']) ? $t['type'] : NULL),
-					$t['function']
-				);
+			if(count($e->getTrace()) > 0){
+				foreach($e->getTrace() as $t){
+					$trace .= sprintf(
+						'[%s:%d] %s%s%s();' . "\n",
+						(isset($t['file']) ? $t['file'] : NULL),
+						(isset($t['line']) ? $t['line'] : NULL),
+						(isset($t['class']) ? $t['class'] : NULL),
+						(isset($t['type']) ? $t['type'] : NULL),
+						$t['function']
+					);
+				}
 			}
 
 			$queries = NULL;
@@ -82,13 +85,7 @@
 
 An error occurred in %s around line %d
 %s
-
-Backtrace
-===========================
 %s
-
-Database Query Log
-===========================
 %s',
 
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
@@ -96,8 +93,8 @@ Database Query Log
 				$e->getFile(),
 				$e->getLine(),
 				$lines,
-				$trace,
-				$queries
+				(!is_null($trace) ? "Backtrace" . PHP_EOL . "===========================" . PHP_EOL . $trace . PHP_EOL : NULL),
+				(!is_null($queries) ? "Database Query Log" . PHP_EOL . "===========================" . PHP_EOL . $queries . PHP_EOL : NULL)
 			);
 
 		}

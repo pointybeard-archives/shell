@@ -1,10 +1,11 @@
 <?php
+	namespace Shell\Lib;
 
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(CORE . '/class.log.php');
 
-	Class Shell extends Symphony{
+	Class Shell extends \Symphony{
 
 		private $_CLIArgs;
 
@@ -17,8 +18,9 @@
 
 		protected function __construct(){
 			parent::__construct();
-			\Shell\Lib\ExceptionHandler::initialise();
-			$this->_CLIArgs = new \Shell\Lib\CLIArguments;
+			ExceptionHandler::initialise();
+			ErrorHandler::initialise();
+			$this->_CLIArgs = new CLIArguments;
 		}
 
 		public function __get($name){
@@ -38,23 +40,23 @@
 
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
-				$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
+				$author = \AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
 						`username` = '%s'
 					", $username
 				));
 
-				if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
+				if(!empty($author) && \Cryptography::compare($password, current($author)->get('password'), $isHash)) {
 					$this->Author = current($author);
 
 					// Only migrate hashes if there is no update available as the update might change the tbl_authors table.
-					if(Cryptography::requiresMigration($this->Author->get('password'))){
+					if(\Cryptography::requiresMigration($this->Author->get('password'))){
 						throw new ShellException('User details require updating. Please login to the admin interface.');
 					}
 
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $this->Author->get('password'));
 					self::Database()->update(array(
-						'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						'last_seen' => \DateTimeObj::get('Y-m-d H:i:s')),
 						'tbl_authors',
 						sprintf(" `id` = %d", $this->Author->get('id'))
 					);
@@ -66,46 +68,15 @@
 			return false;
 		}
 
-		public static function cleanArguments(array $args){
-			$command = NULL;
-			$options = array();
-			$inOption = false;
-
-			foreach($args as $item){
-
-				if($item{0}.$item{1} == '--'){
-					$bits = preg_split('/=/', $item, 2);
-					$key = ltrim($bits[0], '-');
-					$options[$key] = $bits[1];
-				}
-
-				elseif($item{0} == '-'){
-					$inOption = true;
-					$key = ltrim($item, '-');
-				}
-
-				elseif($inOption == true){
-					$options[$key] = $item;
-					$inOption = false;
-				}
-
-				else{
-					$options[] = $item;
-				}
-			}
-
-			return $options;
-		}
-
 		public static function listCommands($extension=NULL){
 
 			$extensions = array();
 
 			if(is_null($extension)){
-				foreach(ExtensionManager::fetch() as $handle => $about){
+				foreach(\ExtensionManager::fetch() as $handle => $about){
 					if(!in_array(EXTENSION_ENABLED, $about['status'])) continue;
 
-					if(is_dir(ExtensionManager::__getClassPath($handle) . '/bin')){
+					if(is_dir(\ExtensionManager::__getClassPath($handle) . '/bin')){
 						$extensions[$handle] = array();
 					}
 				}
@@ -129,6 +100,17 @@
 			}
 
 			return (!is_null($extension) ? $extensions[$extension] : $extensions);
+		}
+
+		public static function message($string, $include_date=true, $add_eol=true){
+			fputs(STDERR,
+					sprintf('%s%s%s',
+						($include_date == true ? gmdate('H:i:s') . ' > ' : NULL),
+						$string,
+						($add_eol == true ? PHP_EOL : NULL)
+					)
+			);
+			return;
 		}
 
 	}

@@ -1,55 +1,14 @@
 #!/usr/bin/env php
 <?php
-
-	function autoloadShellCommands($className){
-		if(preg_match_all('/^Shell\\\\Command\\\\([^\\\\]+)\\\\(.+)$/i', $className, $matches) == 1){
-			$command = $matches[2][0];
-			$extension = $matches[1][0];
-			$file = EXTENSIONS . "/{$extension}/bin/{$command}";
-			if (is_readable($file)) {
-				require $file;
-			}
-		}
-
-		return;
-	}
-
-	function autoloadShellLib($className){
-		$className = ltrim($className, '\\');
-		$file = $namespace = NULL;
-
-		if ($lastNsPos = strripos($className, '\\')) {
-			$namespace = substr($className, 0, $lastNsPos);
-			$className = substr($className, $lastNsPos + 1);
-			$path  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-		}
-
-		$path = EXTENSIONS . DIRECTORY_SEPARATOR . strtolower($path);
-
-		// Class
-		$file = str_replace('_', DIRECTORY_SEPARATOR, $className) . '.class.php';
-		if(is_readable($path . DIRECTORY_SEPARATOR . $file)){
-			require $path . DIRECTORY_SEPARATOR . $file;
-			return;
-		}
-
-		// Interface
-		$file = str_replace('_', DIRECTORY_SEPARATOR, $className) . '.interface.php';
-		if(is_readable($path . DIRECTORY_SEPARATOR . $file)){
-			require $path . DIRECTORY_SEPARATOR . $file;
-			return;
-		}
-	}
-
-	spl_autoload_register("autoloadShellCommands");
-	spl_autoload_register("autoloadShellLib");
+	use Shell\Lib;
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', NULL);
 
-	// Include the engine
+	// Include the Symphony engine
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
-	require_once(EXTENSIONS . '/shell/lib/Shell.class.php');
+
+	require __DIR__ . "/../lib/Autoloader.php";
 
 	// The first item in CLI args is just the path to this file, so ignore it.
 	array_shift($argv);
@@ -57,7 +16,8 @@
 	try {
 
 		// Make sure the Shell has been initialised
-		$engine = Shell::instance();
+		$engine = Lib\Shell::instance();
+
 		$args = $engine->CLIArgs;
 
 		$extension = NULL;
@@ -72,7 +32,7 @@
 			echo "Below is a list of all available commands (use --usage
 for details on executing a command):" . PHP_EOL . PHP_EOL;
 
-			foreach(Shell::listCommands() as $name => $commands){
+			foreach(\Shell::listCommands() as $name => $commands){
 				echo "   {$name}" . PHP_EOL . "   ==========" . PHP_EOL;
 				foreach($commands as $c){
 					echo "      {$c}" . PHP_EOL;
@@ -130,20 +90,20 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
 
 			array_map(
 				function($c){ echo "   {$c}"  . PHP_EOL; return; },
-				Shell::listCommands($extension)
+				Lib\Shell::listCommands($extension)
 			);
 			echo PHP_EOL;
 			exit;
 		}
 
 		if($args->find('u') !== false && $args->find('t') !== false){
-			throw new ShellException("Does not make sense to specify both -t and -u.");
+			throw new Lib\ShellException("Does not make sense to specify both -t and -u.");
 		}
 
 		elseif($args->find('t') !== false){
-			Shell::instance()->loginFromToken($args->find('t')->value);
-			if(!Shell::instance()->isLoggedIn()){
-				throw new ShellException("Error logging in. Authentication token supplied was invalid.");
+			Lib\Shell::instance()->loginFromToken($args->find('t')->value);
+			if(!Lib\Shell::instance()->isLoggedIn()){
+				throw new Lib\ShellException("Error logging in. Authentication token supplied was invalid.");
 			}
 		}
 
@@ -151,25 +111,25 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
 			fputs(STDOUT, 'Password: ');
 			$password = trim(fgets(STDIN, 256));
 
-			Shell::instance()->login($args->find('u')->value, $password);
-			if(!Shell::instance()->isLoggedIn()){
-				throw new ShellException("Error logging in. Username and/or password were incorrect.");
+			Lib\Shell::instance()->login($args->find('u')->value, $password);
+			if(!Lib\Shell::instance()->isLoggedIn()){
+				throw new Lib\ShellException("Error logging in. Username and/or password were incorrect.");
 			}
 		}
 
 		$path = EXTENSIONS . '/' . $extension . '/bin/'. $command;
 		if($path == __FILE__){
-			throw new ShellException("Cannot run 'symphony' as shell command.");
+			throw new Lib\ShellException("Cannot run 'symphony' as shell command.");
 		}
 
 		elseif(!file_exists($path) || !is_readable($path)){
-			throw new ShellException("Specified command file, '{$extension}/bin/{$command}', is either non-existent or unreadable.");
+			throw new Lib\ShellException("Specified command file, '{$extension}/bin/{$command}', is either non-existent or unreadable.");
 		}
 
 		$class = "\Shell\Command\\$extension\\$command";
 		$obj = new $class;
 
-	} catch (ShellException $e) {
+	} catch (Lib\ShellException $e) {
 		fputs(STDERR, $e->getMessage() . PHP_EOL);
 		exit(1);
 	}
