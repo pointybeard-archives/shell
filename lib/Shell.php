@@ -34,7 +34,7 @@
 		 * available in Shell). Hopefully this is fixed in the core Symphony code
 		 *
 		 */
-		public function login($username, $password, $isHash=false){
+		public static function login($username, $password, $isHash=false){
 			$username = self::Database()->cleanValue($username);
 			$password = self::Database()->cleanValue($password);
 
