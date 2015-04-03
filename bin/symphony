@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
     use Shell\Lib;
+    use pointybeard\ShellArgs\Lib as ShellArgs;
 
     define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
     define('DOMAIN', NULL);
@@ -9,23 +10,24 @@
     putenv('HTTP_HOST=symphony.shell');
 	$_SERVER['HTTP_HOST'] = getenv('HTTP_HOST');
 
-    // Include autoloader:
+    // Include symphony autoloader:
     require_once DOCROOT . '/vendor/autoload.php';
-
-    // Include the boot script:
+    
+    // Include the Shell extension Composer autoloader
+    require_once __DIR__ . '/../vendor/autoload.php';
+    
+    // Include the symphony boot script:
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
+    // Include the Shell autoloader (for locating extensions and their commands)
     require __DIR__ . "/../lib/Autoloader.php";
-
-    // The first item in CLI args is just the path to this file, so ignore it.
-    array_shift($argv);
 
     try {
 
         // Make sure the Shell has been initialised
         $engine = Lib\Shell::instance();
 
-        $args = $engine->CLIArgs;
+        $args = new ShellArgs\ArgumentIterator();
 
         $extension = NULL;
         if($args->find('e') !== false) $extension = $args->find('e')->value;
@@ -83,11 +85,9 @@ for details on executing a command):" . PHP_EOL . PHP_EOL;
             exit();
         }
 
-
         if(is_null($extension)){
-            throw new ShellException("No extension specified. A extension must be specified. See --usage for help.");
+            throw new Lib\ShellException("No extension specified. A extension must be specified. See --usage for help.");
         }
-
 
         if(is_null($command)){
 
@@ -115,9 +115,8 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
         }
 
         elseif($args->find('u') !== false){
-            fputs(STDOUT, 'Password: ');
-            $password = trim(fgets(STDIN, 256));
-
+            $password = Lib\Utils::promptForInput("Password: ", true);
+            
             Lib\Shell::instance()->login($args->find('u')->value, $password);
             if(!Lib\Shell::instance()->isLoggedIn()){
                 throw new Lib\ShellException("Error logging in. Username and/or password were incorrect.");
