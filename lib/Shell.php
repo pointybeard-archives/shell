@@ -1,9 +1,7 @@
 <?php
 	namespace Shell\Lib;
-
-	require_once(CORE . '/class.symphony.php');
-	require_once(TOOLKIT . '/class.lang.php');
-	require_once(CORE . '/class.log.php');
+	
+	use pointybeard\ShellArgs\Lib\ArgumentIterator;
 
 	Class Shell extends \Symphony{
 
@@ -20,7 +18,7 @@
 			parent::__construct();
 			ExceptionHandler::initialise();
 			ErrorHandler::initialise();
-			$this->_CLIArgs = new CLIArguments;
+			$this->_CLIArgs = new ArgumentIterator();
 		}
 
 		public function __get($name){
@@ -46,19 +44,19 @@
 				));
 
 				if(!empty($author) && \Cryptography::compare($password, current($author)->get('password'), $isHash)) {
-					$this->Author = current($author);
+					self::$Author = current($author);
 
 					// Only migrate hashes if there is no update available as the update might change the tbl_authors table.
-					if(\Cryptography::requiresMigration($this->Author->get('password'))){
+					if(\Cryptography::requiresMigration(self::$Author->get('password'))){
 						throw new ShellException('User details require updating. Please login to the admin interface.');
 					}
 
-					$this->Cookie->set('username', $username);
-					$this->Cookie->set('pass', $this->Author->get('password'));
+					self::$Cookie->set('username', $username);
+					self::$Cookie->set('pass', self::$Author->get('password'));
 					self::Database()->update(array(
 						'last_seen' => \DateTimeObj::get('Y-m-d H:i:s')),
 						'tbl_authors',
-						sprintf(" `id` = %d", $this->Author->get('id'))
+						sprintf(" `id` = %d", self::$Author->get('id'))
 					);
 
 					return true;
