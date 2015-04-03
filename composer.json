@@ -1,0 +1,27 @@
+{
+    "name": "pointybeard/shell",
+    "version": "1.0.1",
+    "description": "Symphony Extensions that allows running commands, provided by symphony extensions, from the command line.",
+    "homepage": "https://github.com/pointybeard/shell",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alistair Kearney",
+            "email": "hi@alistairkearney.com",
+            "homepage": "http://alistairkearney.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.6",
+        "pointybeard/shell-args": "~1.0"
+    },
+    "support": {
+      "issues": "https://github.com/pointybeard/shell/issues",
+      "wiki": "https://github.com/pointybeard/shell/wiki"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+      "classmap": ["lib", "lib/interfaces"]
+    }
+}
