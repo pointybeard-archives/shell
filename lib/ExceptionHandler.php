@@ -3,9 +3,6 @@
 	use \Exception;
 	use \GenericExceptionHandler;
 
-	Class ShellException extends Exception{
-	}
-
 	Class ExceptionHandler extends GenericExceptionHandler{
 
 		public static function initialise(){
