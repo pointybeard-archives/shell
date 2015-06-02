@@ -1,4 +1,5 @@
 <?php
 
-	Class extension_Shell extends Extension{
-	}
+    class extension_Shell extends Extension
+    {
+    }

@@ -1,6 +1,8 @@
 <?php
-	namespace Shell\Lib\Interfaces;
-	interface Command{
-		public function run();
-		public function usage();
-	}
+namespace Shell\lib\interfaces;
+
+interface Command
+{
+    public function run();
+    public function usage();
+}

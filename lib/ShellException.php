@@ -1,6 +1,8 @@
 <?php
-	namespace Shell\Lib;
-	use \Exception;
+namespace Shell\lib;
 
-	Class ShellException extends Exception{
-	}
+use Exception;
+
+    class ShellException extends Exception
+    {
+    }
