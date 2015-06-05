@@ -1,5 +1,5 @@
 <?php
-namespace Shell\lib;
+namespace Shell\Lib;
 
 class Utils
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Shell\lib;
+namespace Shell\Lib;
 
 use Exception;
     use GenericExceptionHandler;

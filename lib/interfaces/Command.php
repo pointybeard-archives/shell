@@ -1,5 +1,5 @@
 <?php
-namespace Shell\lib\interfaces;
+namespace Shell\Lib\interfaces;
 
 interface Command
 {

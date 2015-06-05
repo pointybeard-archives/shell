@@ -1,45 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension id="shell" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
-	<name>Shell</name>
-	<description>Framework for accessing Symphony via the command line</description>
-	<repo type="github">https://github.com/pointybeard/shell</repo>
-	<url type="discuss">https://github.com/pointybeard/shell</url>
-	<types>
-		<type>Utility</type>
-	</types>
-	<authors>
-		<author>
-			<name github="pointybeard" symphony="team">Alistair Kearney</name>
-			<website>http://alistairkearney.com</website>
-		</author>
-	</authors>
-	<releases>
-		<release version="1.0.1" date="2015-04-03" min="2.6">
-			- Added composer autoloader
-			- Added shell-args package
-			- Added Utils::promptForInput() which supports silent input capturing. Password will no longer echo to the display when using -u
-		</release>
-		<release version="1.0" date="2014-09-23" min="2.4" max="2.4">
-			- Checked compatiblity with Symphony 2.4+
-			- Using namespaces.
-			- Updated command API.
-			- Using SPL autoloader for all extension classes and loading commands from other extensions
-			- Updated argument structure. Requires -c and -e before the command and extension values
-		</release>
-		<release version="0.4" date="2012-09-10" min="2.3.1beta2" max="2.4">
-			- Added support for Symphony 2.3.x
-		</release>
-		<release version="0.3" date="2012-09-17" min="2.0.6" max="2.0.6">
-			- Fixed bug that ignored the '--usage' flag
-			- Added username ('-u') option, which can be used instead of '-t'
-		</release>
-		<release version="0.2" date="2009-09-13" min="2.0.6" max="2.0.6">
-			- adding '--usage' after a command will trigger that commands 'usage()' function
-			- added 'Shell::listCommands([$extension])' function for listing commands in the system
-			- omitting a command will list all the commands available for that extension
-			- omitting both extension and command will list all commands in the system
-			- added "deny from all" '.htaccess' directive to the 'bin/' folder
-			- 'test' command implements 'ShellCommand::usage()'
-		</release>
-	</releases>
+    <name>Shell</name>
+    <description>Framework for accessing Symphony via the command line</description>
+    <repo type="github">https://github.com/pointybeard/shell</repo>
+    <url type="discuss">https://github.com/pointybeard/shell</url>
+    <types>
+        <type>Utility</type>
+    </types>
+    <authors>
+        <author>
+            <name github="pointybeard" symphony="team">Alistair Kearney</name>
+            <website>http://alistairkearney.com</website>
+        </author>
+    </authors>
+    <releases>
+        <release version="1.0.2" date="2015-06-07" min="2.6">
+            - Refactoring of the Autoloader
+            - Updated to work with 1.0.3 of ShellArgs
+        </release>
+        <release version="1.0.1" date="2015-04-03" min="2.6">
+            - Added composer autoloader
+            - Added shell-args package
+            - Added Utils::promptForInput() which supports silent input capturing. Password will no longer echo to the display when using -u
+        </release>
+        <release version="1.0" date="2014-09-23" min="2.4" max="2.4">
+            - Checked compatiblity with Symphony 2.4+
+            - Using namespaces.
+            - Updated command API.
+            - Using SPL autoloader for all extension classes and loading commands from other extensions
+            - Updated argument structure. Requires -c and -e before the command and extension values
+        </release>
+        <release version="0.4" date="2012-09-10" min="2.3.1beta2" max="2.4">
+            - Added support for Symphony 2.3.x
+        </release>
+        <release version="0.3" date="2012-09-17" min="2.0.6" max="2.0.6">
+            - Fixed bug that ignored the '--usage' flag
+            - Added username ('-u') option, which can be used instead of '-t'
+        </release>
+        <release version="0.2" date="2009-09-13" min="2.0.6" max="2.0.6">
+            - adding '--usage' after a command will trigger that commands 'usage()' function
+            - added 'Shell::listCommands([$extension])' function for listing commands in the system
+            - omitting a command will list all the commands available for that extension
+            - omitting both extension and command will list all commands in the system
+            - added "deny from all" '.htaccess' directive to the 'bin/' folder
+            - 'test' command implements 'ShellCommand::usage()'
+        </release>
+    </releases>
 </extension>

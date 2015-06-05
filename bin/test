@@ -1,29 +1,29 @@
 <?php
-	namespace Shell\Command\Shell;
+namespace Shell\Command\Shell;
 
-    use Shell\Lib\Interfaces\Command as ShellCommand;
-    use Shell\Lib\Shell as Shell;
-    
-	Class Test implements ShellCommand
-    {
+use Shell\Lib\Interfaces\Command as ShellCommand;
+use Shell\Lib\Shell as Shell;
 
-		public function usage(){
-			return 'This is the test command that ships with the shell extension.' . PHP_EOL;
-		}
+Class Test implements ShellCommand
+{
 
-		public function run(){
+    public function usage(){
+        return 'This is the test command that ships with the shell extension.' . PHP_EOL;
+    }
 
-			if(!Shell::instance()->isLoggedIn()){
-				throw new \Exception('Valid authentication token must be supplied.');
-			}
+    public function run(){
 
-			Shell::message("Hi there. I am the 'test' command. Awesome I am. Here are the arguments you passed in: ", false, true);
+        if(!Shell::instance()->isLoggedIn()){
+            throw new \Exception('Valid authentication token must be supplied.');
+        }
 
-			foreach(Shell::instance()->CLIArgs as $key => $arg){
-				Shell::message(sprintf("%d: '%s' => '%s'", $key, $arg->name, $arg->value), false, true);
-			}
+        Shell::message("Hi there. I am the 'test' command. Awesome I am. Here are the arguments you passed in: ", false, true);
 
-			print PHP_EOL;
+        foreach(Shell::instance()->args as $key => $arg){
+            Shell::message(sprintf("%d: '%s' => '%s'", $key, $arg->name(), $arg->value()), false, true);
+        }
 
-		}
-	}
+        print PHP_EOL;
+
+    }
+}

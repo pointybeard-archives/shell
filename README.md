@@ -1,6 +1,6 @@
 # Symphony Shell
 
-- Version: 1.0.1
+- Version: 1.0.2
 - Author: Alistair Kearney (hi@alistairkearney.com)
 - Build Date: 3rd April 2015
 - Requirements: Symphony 2.6 or greater

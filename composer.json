@@ -22,6 +22,6 @@
     },
     "minimum-stability": "stable",
     "autoload": {
-      "classmap": ["lib", "lib/interfaces"]
+      "classmap": ["Lib"]
     }
 }
