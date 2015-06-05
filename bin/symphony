@@ -30,12 +30,14 @@
         $args = new ShellArgs\ArgumentIterator();
 
         $extension = NULL;
-        if($args->find('e') !== false) $extension = $args->find('e')->value;
-        elseif($args->find('extension') !== false) $extension = $args->find('extension')->value;
+        if($args->find(['extension', 'e']) !== false){
+            $extension = $args->find(['extension', 'e'])->value();
+        }
 
         $command = NULL;
-        if($args->find('c') !== false) $command = $args->find('c')->value;
-        elseif($args->find('command') !== false) $command = $args->find('command')->value;
+        if($args->find(['c', 'command']) !== false){
+            $command = $args->find(['c', 'command'])->value();
+        }
 
         if(count($argv) == 0){
             echo "Below is a list of all available commands (use --usage
@@ -52,7 +54,7 @@ for details on executing a command):" . PHP_EOL . PHP_EOL;
             exit;
         }
 
-        elseif(is_null($extension) && $args->find('usage') !== false){
+        elseif(is_null($extension) && $args->find(['h', 'help', 'usage']) !== false){
             echo "    usage: symphony [OPTION...] -e EXTENSION -c COMMAND [args]
     runs command provided via extension.
 
@@ -61,12 +63,12 @@ for details on executing a command):" . PHP_EOL . PHP_EOL;
     will give a list of all commands available in the system.
 
     options:
-        -t
+        -t, --token
             authentication token. Can be enabled via Symphony user
             profile. Not all extensions require authentication. Check
             individual extension commands for usage.
 
-        -u
+        -u, --username
             User for login. Instead of using -t, it is possible
             to be authenticated with username and password. If -u is
             specified, password will be prompted for.
@@ -103,21 +105,21 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
             exit;
         }
 
-        if($args->find('u') !== false && $args->find('t') !== false){
+        if($args->find(['u', 'username']) !== false && $args->find(['t', 'token']) !== false){
             throw new Lib\ShellException("Does not make sense to specify both -t and -u.");
         }
 
-        elseif($args->find('t') !== false){
-            Lib\Shell::instance()->loginFromToken($args->find('t')->value);
+        elseif($args->find(['t', 'token']) !== false){
+            Lib\Shell::instance()->loginFromToken($args->find(['t', 'token'])->value());
             if(!Lib\Shell::instance()->isLoggedIn()){
                 throw new Lib\ShellException("Error logging in. Authentication token supplied was invalid.");
             }
         }
 
-        elseif($args->find('u') !== false){
+        elseif($args->find(['u', 'username']) !== false){
             $password = Lib\Utils::promptForInput("Password: ", true);
             
-            Lib\Shell::instance()->login($args->find('u')->value, $password);
+            Lib\Shell::instance()->login($args->find(['u', 'username'])->value(), $password);
             if(!Lib\Shell::instance()->isLoggedIn()){
                 throw new Lib\ShellException("Error logging in. Username and/or password were incorrect.");
             }
