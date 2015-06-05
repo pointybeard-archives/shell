@@ -55,6 +55,6 @@ class Autoloader
     }
 }
 
-    spl_autoload_register(__NAMESPACE__."\ShellAutoloader::commands");
-    spl_autoload_register(__NAMESPACE__."\ShellAutoloader::library");
-    spl_autoload_register(__NAMESPACE__."\ShellAutoloader::extensionDriver");
+    spl_autoload_register(__NAMESPACE__."\Autoloader::commands");
+    spl_autoload_register(__NAMESPACE__."\Autoloader::library");
+    spl_autoload_register(__NAMESPACE__."\Autoloader::extensionDriver");
