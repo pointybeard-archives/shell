@@ -18,20 +18,40 @@ class Utils
      *                        Turns off echoing of input to CLI. Useful for passwords. Only works if bash is avilable.
      * @return string
      */
-    public static function promptForInput($prompt, $silent = false)
+    public static function promptForInput($prompt, $silent = false, $default = null, \Closure $validator = null)
     {
-        if ($silent == true && self::canInvokeBash()) {
-            $command = "/usr/bin/env bash -c 'read -s -p \""
-              .addslashes($prompt)
-              ."\" mypassword && echo \$mypassword'";
-            $password = shell_exec($command);
-            echo PHP_EOL;
-        } else {
-            fputs(STDOUT, $prompt);
-            $password = fgets(STDIN, 256);
+        if ($silent == true && !self::canInvokeBash()) {
+            throw new \Exception("bash cannot be invoked from PHP. 'silent' flag cannot be used.");
         }
 
-        return trim($password);
+        if(!($prompt instanceof Message)) {
+            $prompt = new Message($prompt);
+        }
+
+        $prompt->message(sprintf(
+            "%s%s: ", $prompt->message, (!is_null($default) ? " [{$default}]" : null)
+        ));
+
+        do{
+            $prompt->display();
+            
+            if($silent) {
+                $command = "/usr/bin/env bash -c 'read -s in && echo \$in'";
+                $input = shell_exec($command);
+                echo PHP_EOL;
+
+            } else {
+                $input = fgets(STDIN, 256);
+            }
+
+            $input = trim($input);
+            if(strlen(trim($input)) == 0 && !is_null($default)){
+                $input = $default;
+            }
+
+        }while($validator instanceof \Closure && !$validator($input));
+
+        return $input;
     }
 
     /**
