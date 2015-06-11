@@ -109,16 +109,12 @@ class Shell extends \Symphony
         return (!is_null($extension) ? $extensions[$extension] : $extensions);
     }
 
-    public static function message($string, $include_date = true, $add_eol = true)
+    public static function message($string, $includeDate = true, $addNewLine = true)
     {
-        fputs(STDERR,
-                sprintf('%s%s%s',
-                    ($include_date == true ? gmdate('H:i:s').' > ' : null),
-                    $string,
-                    ($add_eol == true ? PHP_EOL : null)
-                )
-        );
-
-        return;
+        return (new Message($string))
+            ->prependDate($includeDate)
+            ->dateFormat('G:i:s > ')
+            ->appendNewLine($addNewLine)
+            ->display();
     }
 }
