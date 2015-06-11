@@ -10,6 +10,8 @@ class Message
     private $dateFormat = null;
     private $appendNewLine = true;
     
+    // Credit to JR from http://www.if-not-true-then-false.com/
+    // for the code reponsible for colourising the messages
     private static $foregroundColours = [
         'black' => '0;30',
         'dark gray' => '1;30',
