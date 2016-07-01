@@ -22,6 +22,8 @@
     },
     "minimum-stability": "stable",
     "autoload": {
-      "classmap": ["Lib"]
+        "psr-4": {
+            "Symphony\\Shell\\": "src/"
+        }
     }
 }
