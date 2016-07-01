@@ -9,12 +9,16 @@ class ExceptionHandler extends GenericExceptionHandler
     public static function initialise()
     {
         self::$enabled = true;
-        restore_exception_handler();
+
+        // Symphony's exception handler is set twice. Call restore_error_handler 2
+        // times to clear it out.
+        restore_exception_handler(); restore_exception_handler();
         set_exception_handler(array(__CLASS__, 'handler'));
     }
 
     public static function handler($e)
     {
+
         try {
             if (self::$enabled !== true) {
                 return;
@@ -27,12 +31,14 @@ class ExceptionHandler extends GenericExceptionHandler
             }
 
             echo call_user_func(array($class, 'render'), $e);
-            exit;
+
         } catch (Exception $e) {
             echo 'Looks like the Exception handler crapped out';
             print_r($e);
-            exit;
+
         }
+
+        exit();
     }
 
     public static function render($e)

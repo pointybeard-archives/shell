@@ -19,7 +19,9 @@ class ErrorHandler extends GenericErrorHandler
      */
     public static function initialise()
     {
-        restore_error_handler();
+        // Symphony's error handler is set twice. Call restore_error_handler 2
+        // times to clear it out.
+        restore_error_handler(); restore_error_handler();
         set_error_handler(array(__CLASS__, 'handler'), error_reporting());
     }
 
