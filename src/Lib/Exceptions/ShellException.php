@@ -1,5 +1,5 @@
 <?php
-namespace Symphony\Shell\Lib;
+namespace Symphony\Shell\Lib\Exceptions;
 
 use Exception;
 
