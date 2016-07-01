@@ -18,9 +18,22 @@ class Shell extends \Symphony
 
     protected function __construct()
     {
-        parent::__construct();
+        try{
+            parent::__construct();
+
+        // We want to ignore the 'Headers Already Sent' exception
+        } catch(\Exception $e) {
+
+            // Should this not be a headers already sent exception, rethrow it
+            if(!preg_match('@headers\s+already\s+sent@i', $e->getMessage())) {
+                throw $e;
+            }
+        }
+
+        // Set Shell extension specific handlers
         ExceptionHandler::initialise();
         ErrorHandler::initialise();
+
         $this->_args = new ArgumentIterator();
     }
 
