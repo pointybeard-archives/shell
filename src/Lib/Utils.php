@@ -24,7 +24,7 @@ class Utils
             throw new \Exception("bash cannot be invoked from PHP. 'silent' flag cannot be used.");
         }
 
-        if(!($prompt instanceof Message)) {
+        if (!($prompt instanceof Message)) {
             $prompt = new Message($prompt);
         }
 
@@ -32,24 +32,22 @@ class Utils
             "%s%s: ", $prompt->message, (!is_null($default) ? " [{$default}]" : null)
         ));
 
-        do{
+        do {
             $prompt->display();
             
-            if($silent) {
+            if ($silent) {
                 $command = "/usr/bin/env bash -c 'read -s in && echo \$in'";
                 $input = shell_exec($command);
                 echo PHP_EOL;
-
             } else {
                 $input = fgets(STDIN, 256);
             }
 
             $input = trim($input);
-            if(strlen(trim($input)) == 0 && !is_null($default)){
+            if (strlen(trim($input)) == 0 && !is_null($default)) {
                 $input = $default;
             }
-
-        }while($validator instanceof \Closure && !$validator($input));
+        } while ($validator instanceof \Closure && !$validator($input));
 
         return $input;
     }

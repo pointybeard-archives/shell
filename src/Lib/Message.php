@@ -42,7 +42,8 @@ class Message
         'light gray' => '47',
     ];
     
-    public function __get($name){
+    public function __get($name)
+    {
         return $this->$name;
     }
 
@@ -54,14 +55,15 @@ class Message
         $this->dateFormat("H:i:s > ");
     }
     
-    public function message($message){
+    public function message($message)
+    {
         $this->message = $message;
         return $this;
     }
     
     public function foreground($colour)
     {
-        if(!array_key_exists($colour, self::$foregroundColours)) {
+        if (!array_key_exists($colour, self::$foregroundColours)) {
             throw new \Exception('No such foreground colour `'.$colour.'`');
         }
         $this->foreground = $colour;
@@ -70,7 +72,7 @@ class Message
     
     public function background($colour)
     {
-        if(!array_key_exists($colour, self::$backgroundColours)) {
+        if (!array_key_exists($colour, self::$backgroundColours)) {
             throw new \Exception('No such background colour `'.$colour.'`');
         }
         $this->background = $colour;
