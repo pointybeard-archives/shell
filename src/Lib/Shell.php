@@ -86,42 +86,6 @@ class Shell extends \Symphony
         return false;
     }
 
-    public static function listCommands($extension = null)
-    {
-        $extensions = array();
-
-        if (is_null($extension)) {
-            foreach (\ExtensionManager::fetch() as $handle => $about) {
-                if (!in_array(EXTENSION_ENABLED, $about['status'])) {
-                    continue;
-                }
-
-                if (is_dir(\ExtensionManager::__getClassPath($handle).'/bin')) {
-                    $extensions[$handle] = array();
-                }
-            }
-        } else {
-            if (!is_dir(EXTENSIONS."/{$extension}/bin")) {
-                throw new ShellException('Could not locate any commands for extension. '."'{$extension}/bin' directory does not exist.");
-            }
-
-            $extensions[$extension] = array();
-        }
-
-        foreach (array_keys($extensions) as $handle) {
-            $scripts = glob(EXTENSIONS."/{$handle}/bin/*");
-            foreach ($scripts as $s) {
-                $name = basename($s);
-                if (($handle == 'shell' && $name == 'symphony') || $name{0} == '.') {
-                    continue;
-                }
-                $extensions[$handle][] = basename($name);
-            }
-        }
-
-        return (!is_null($extension) ? $extensions[$extension] : $extensions);
-    }
-
     public static function message($string, $includeDate = true, $addNewLine = true)
     {
         return (new Message($string))

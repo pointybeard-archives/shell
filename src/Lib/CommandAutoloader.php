@@ -45,4 +45,42 @@ final class CommandAutoloader
             }
         });
     }
+
+    public static function fetch()
+    {
+        $commands = [];
+
+        $path = realpath(WORKSPACE . '/bin');
+        if (is_dir($path) && is_readable($path)) {
+            foreach (new \DirectoryIterator($path) as $f) {
+                if ($f->isDot()) {
+                    continue;
+                }
+                $commands[] = "workspace/" . $f->getFilename();
+            }
+        }
+
+        foreach (new \DirectoryIterator(EXTENSIONS) as $d) {
+            if ($d->isDot() || !$d->isDir() || !is_dir($d->getPathname() . '/bin')) {
+                continue;
+            }
+
+            foreach (new \DirectoryIterator($d->getPathname() . '/bin') as $f) {
+                if ($f->isDot() || !preg_match_all('/extensions\/([^\/]+)\/bin\/([^\.\/]+)$/i', $f->getPathname(), $matches, PREG_SET_ORDER)) {
+                    continue;
+                }
+                list(, $extension, $command) = $matches[0];
+
+                // Skip over the core 'symphony' commands as this should be
+                // inaccessable
+                if ($extension == 'shell' && $command == 'symphony') {
+                    continue;
+                }
+
+                $commands[] = "{$extension}/{$command}";
+            }
+        }
+
+        return $commands;
+    }
 }
