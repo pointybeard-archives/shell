@@ -1,10 +1,10 @@
 <?php
-namespace Shell\Command\Shell;
+namespace Symphony\Shell\Command\Shell;
 
-use Shell\Lib\Interfaces\Command as ShellCommand;
-use Shell\Lib\Shell as Shell;
+use Symphony\Shell\Lib;
+use Symphony\Shell\Lib\Shell as Shell;
 
-Class Test implements ShellCommand
+Class Test implements Lib\Interfaces\Command
 {
 
     public function usage(){

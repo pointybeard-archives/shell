@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-    use Shell\Lib;
+    use Symphony\Shell\Lib;
     use pointybeard\ShellArgs\Lib as ShellArgs;
 
     define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
@@ -20,7 +20,8 @@
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
     // Include the Shell autoloader (for locating extensions and their commands)
-    require __DIR__ . "/../Lib/Autoloader.php";
+    require __DIR__ . "/../Lib/CommandAutoloader.php";
+    Lib\CommandAutoloader::init();
 
     try {
 

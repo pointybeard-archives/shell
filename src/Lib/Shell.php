@@ -1,5 +1,5 @@
 <?php
-namespace Shell\Lib;
+namespace Symphony\Shell\Lib;
 
 use pointybeard\ShellArgs\Lib\ArgumentIterator;
 

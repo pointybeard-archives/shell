@@ -1,5 +1,5 @@
 <?php
-namespace Shell\Lib\Interfaces;
+namespace Symphony\Shell\Lib\Interfaces;
 
 interface Command
 {
