@@ -1,0 +1,36 @@
+<?php
+namespace Symphony\Shell\Command\Shell;
+
+use Symphony\Shell\Lib;
+
+class Hello implements Lib\Interfaces\Command
+{
+
+    public function usage()
+    {
+        return "    usage for 'shell/hello'
+
+    This command that echos all argument provided and mostly serves as an
+    example.
+
+    examples:
+        symphony -c shell/hello
+        symphony --command=shell/hello" . PHP_EOL;
+    }
+
+    public function run()
+    {
+        Lib\Shell::message(
+            " Hello! Here are the arguments you passed me. ",
+            false, // This disabled the timestamp at the beginning of the line
+            true, //We want a new line character
+            "light green", "white"
+        );
+
+        foreach (Lib\Shell::instance()->args as $key => $arg) {
+            Lib\Shell::message(sprintf("%d: '%s' => '%s'", $key, $arg->name(), $arg->value()), false, true);
+        }
+
+        print PHP_EOL;
+    }
+}
