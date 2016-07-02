@@ -121,11 +121,7 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
         }
     }
 } catch (Exceptions\ShellException $e) {
-    $message = (new Lib\Message)
-        ->message("ERROR: " . $e->getMessage())
-        ->foreground('red')
-        ->display();
-    exit(1);
+    Lib\Shell::error($e->getMessage());
 }
 
 // Finally run the command. Let it handle exceptions on its own though.
