@@ -1,31 +1,38 @@
-# Symphony Shell
+# Shell Extension for Symphony CMS
 
-- Version: 1.0.2
-- Author: Alistair Kearney (hi@alistairkearney.com)
-- Build Date: 3rd April 2015
-- Requirements: Symphony 2.6 or greater
+- Version: v2.0.0
+- Date: July 3 2016
+- [Release notes](https://github.com/pointybeard/shell/blob/master/CHANGELOG.md)
+- [GitHub repository](https://github.com/pointybeard/shell)
 
-
-The Symphony Shell extension is a framework that allows commands to run from the command line. Commands
-are scripts provided by this and/or other extensions. See bin/test for an example.
+The Symphony Shell extension provides access to the Symphony core from the command line.
 
 Developers can include commands in their extensions, allowing for operations not suited
-to web servers. The command API gives access to Symphony core framework, including Database, Config, Log
-etc.
+to web servers. The command API gives easy access to the Symphony core framework, including database, config, authentication and logs.
 
-## INSTALLATION
+## Installation
 
-1. Upload the 'shell' folder in this archive to your Symphony 'extensions' folder.
-2. Enable it by selecting the "Shell", choose Enable from the with-selected menu, then click Apply.
+This is an extension for [Symphony CMS](http://getsymphony.com). Add it to the `/extensions` folder of your Symphony CMS installation, then enable it though the interface.
 
-### Optional Steps
-1. Run the following to make the `symphony` script executable: `chmod +x extensions/shell/bin/symphony`
-2. Add the `extensions/shell/bin/symphony` path to your `PATH` environment variable or create
-    a symbolic link to it in a location that resides in the `PATH` e.g. /usr/local/sbin. This will
-    enable you to run the command `symphony` without preceding path information.
+### Requirements
 
+This extension requires the **[Shell Arguments](https://github.com/pointybeard/shellargs)** (`symfony/http-foundation`) library to be installed via Composer. Either require it in your main composer.json file, or run `composer install` on the `extension/shell` directory.
 
-## USAGE
+```json
+"require": {
+  "php": ">=5.6.6",
+  "pointybeard/shell-args": "~1.0"
+}
+```
+
+### Optional Setup
+
+To simply accessing Symphony commands on the command line, we recommend you do the follow:
+
+1. Make the `bin/symphony` script executable with `chmod +x extensions/shell/bin/symphony`
+2. Add `extensions/shell/bin/symphony` to your `PATH` or create a symbolic link in a location that resides in the `PATH` e.g. `/usr/local/sbin`. This will allow you to call the Symphony command from anywhere.
+
+## Usage
 
 From the shell, you can run the following command
 
@@ -35,38 +42,115 @@ For usage information, use `--usage`. E.G.
 
     php -f /path/to/extensions/shell/bin/symphony -- --usage
 
-or, if you followed the optional steps above, just
+or, if you followed the "Optional Setup" above, just
 
     symphony --usage
 
+**This remainder of this document assumes you have set up the extension using the "Optional Setup" steps above.**
 
-## CHANGE LOG
+### Getting Started
 
-    1.0.1 - Added composer autoloader
-          - Added shell-args package
-          - Added Utils::promptForInput() which supports silent input capturing. Password will no
-            longer echo to the display when using -u
+The Shell extension looks for commands in the `bin/` folder of extensions you have installed, and also in `workspace/bin/`. You can see a list of commands by running `symphony` without any arguments. A list like this will be displayed:
 
-    1.0 -   Checked compatiblity with Symphony 2.4+
-        -   Using namespaces.
-        -   Updated command API.
-        -   Using SPL autoloader for all extension classes and loading commands from other extensions
-        -   Updated argument structure. Requires -c and -e before the command and extension values
+    Below is a list of all available commands. (use --usage for details on
+    executing individual commands):
 
-    0.4 -   Added support for Symphony 2.3.x
+       shell/hello
+       shell/token
 
-    0.3 -   Fixed bug that ignored the `--usage` flag
-        -   Added username (`-u`) option, which can be used instead of `-t`
+At any time you can use `--usage`, `--help` or `-h` to get help. If you have also specified a command (see below), you will get help for that particular command instead.
 
-    0.2 -   adding `--usage` after a command will trigger that commands `usage()` function
-        -   added `Shell::listCommands([$extension])` function for listing commands in the system
-        -   omitting a command will list all the commands available for that extension
-        -   omitting both extension and command will list all commands in the system
-        -   added "deny from all" `.htaccess` directive to the `bin/` folder
-        -   `test` command implements `ShellCommand::usage()`
+Use the `-c` or `--command` argument to run a particular command. The value provided is always `[extension]/[command]` or `[workspace]/[command]`. This extension comes with two commands out of the box: `hello` and `token`.
 
-## TODO
+To run the `hello` command use the following:
 
-    - Streamline the installation process
-    - Make the README clearer
-    - Enabling/Disabling the extension in Symphony admin should have some effect.
+    symphony -c shell/hello
+
+You should see output like this:
+
+    Hello! Here are the arguments you passed me.
+    0: 'c' => 'shell/hello'
+
+### Authentication
+
+Some commands may require you are authenticated before you use them. To do this, either provide the name of the user you want to authenticate as with `-u <username>` or the auth token of that user with `-t <token>`. When using `-u`, you will be prompted to enter your password.
+
+## Writing a custom command
+
+To write a command, create a class that implements `Symphony\Shell\Lib\Interfaces\Command` and place it into `workspace/bin/`. Alternatively, put it into the `bin/` folder of any Extension. You commands will be prefixed with either `workspace` (if it has been placed in `workspace/bin/`), or by the name of the extension.
+
+Any command you write must have a namespace starting with `Symphony\Shell\Command\` followed by the name of your extension (e.g. `namespace Symphony\Shell\Command\MyExtension`) or `workspace` (i.e. `namespace Symphony\Shell\Command\Workspace`).
+
+When implementing `Symphony\Shell\Lib\Interfaces\Command`, you must include a `usage` and `run` method.
+
+Here is an example of a very basic Command called `test` placed in `workspace/bin/`:
+
+```php
+<?php
+namespace Symphony\Shell\Command\Workspace;
+
+use Symphony\Shell\Lib;
+
+class Test implements Lib\Interfaces\Command
+{
+
+    public function usage()
+    {
+        return "    usage for 'workspace/test'
+
+    Add usage information for this command." . PHP_EOL;
+    }
+
+    public function run()
+    {
+        Lib\Shell::message("Greetings. This is the test command!");
+    }
+}
+```
+
+From within the `run()` method, you have full access to the Symphony core framework. For example, to get the database object, use `\Symphony::Database()`. Anything you would normally do in an extension, you can do here (e.g. triggering delegates, accessing sections or fields).
+
+### Requiring Authentication
+
+You can secure your commands so that anyone using it must provide Symphony user credentials. To do this, instead of implementing `Symphony\Shell\Lib\Interfaces\Command`, extend `Symphony\Shell\Lib\AuthenticatedCommand`. When you command is run, Shell will notice and force the user to provide a authentication with `-u` or `-t`.
+
+When extending `AuthenticatedCommand`, you must provide an `authenticate()` method in your command. The simplest way is to use the `hasRequiresAuthenticationTrait` trait. It includes a boilerplate `authenticate()` method and generally is more than adequate. It will check if the user is logged in, and throw an `AuthenticationRequiredException` if they are not.
+
+Here is the same 'test' command from above, but this time it requires authentication:
+
+```php
+<?php
+namespace Symphony\Shell\Command\Workspace;
+
+use Symphony\Shell\Lib;
+
+class Test extend Lib\AuthenticatedCommand
+{
+    use Lib\Traits\hasRequiresAuthenticationTrait;
+
+    public function usage()
+    {
+        return "    usage for 'workspace/test'
+
+    Add usage information for this command." . PHP_EOL;
+    }
+
+    public function run()
+    {
+        Lib\Shell::message("Greetings. This is the test command!");
+    }
+}
+```
+
+## Support
+
+If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/pointybeard/shell/issues),
+or better yet, fork the library and submit a pull request.
+
+## Contributing
+
+We encourage you to contribute to this project. Please check out the [Contributing documentation](https://github.com/pointybeard/shell/blob/master/CONTRIBUTING.md) for guidelines about how to get involved.
+
+## License
+
+"Shell Extension for Symphony CMS" is released under the [MIT License](http://www.opensource.org/licenses/MIT).
