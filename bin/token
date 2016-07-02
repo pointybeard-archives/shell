@@ -1,0 +1,94 @@
+<?php
+namespace Symphony\Shell\Command\Shell;
+
+use Symphony\Shell\Lib;
+use Symphony\Shell\Lib\Exceptions;
+
+use \Symphony, \AuthorManager;
+
+class Token extends Lib\AuthenticatedCommand
+{
+    use Lib\Traits\hasRequiresAuthenticationTrait;
+
+    public function usage()
+    {
+        return "    usage for 'shell/token'
+
+    This command will provide an author token for the specified author.
+    Authentication is required.
+
+    options:
+        --user          Return a token for this user. If ommitted, authenticated
+                        user is assumed. Changing authors other than your own
+                        requires 'Developer' or 'Manager' user type.
+
+        -e | --enable   This enables token authentication
+
+        -d | --disable  This will disable token authentication
+
+    examples:
+        symphony -t 4141e465 -c shell/token --user=fred
+        symphony -u fred --command=shell/token" . PHP_EOL;
+    }
+
+    public function run()
+    {
+
+        $args = Lib\Shell::instance()->args;
+
+        // Sanity check: Make sure -d and -e aren't set at the same time
+        if($args->find(['d', 'disable']) !== false && $args->find(['e', 'enable']) !== false) {
+            Lib\Shell::error("Setting -d and -e at the same time does not make sense!");
+        }
+
+        // Look for the --user argument
+        if($args->find('user') !== false) {
+            $author = AuthorManager::fetchByUsername($args->find('user')->value());
+
+            if($author == null) {
+                Lib\Shell::error("Could not locate user " . $args->find('user')->value());
+            }
+
+        // --user was ommited, assume current authenticated user
+        } else {
+            $author = Symphony::Author();
+        }
+
+        // Check if the authenticated user has permissions
+        if(Symphony::Author()->get('id') != $author->get('id') && !Symphony::Author()->isDeveloper() && !Symphony::Author()->isManager()) {
+            Lib\Shell::error("You must be developer or manager to change that author");
+        }
+
+
+        if($args->find(['e', 'enable']) !== false) {
+            $author->set('auth_token_active', 'yes');
+            $author->commit();
+            Lib\Shell::message(
+                "SUCCESS: Auth token enabled for user '" . $author->get("username") . "'",
+                false, true, "green"
+            );
+        }
+
+        elseif($args->find(['d', 'disable']) !== false) {
+            $author->set('auth_token_active', 'no');
+            $author->commit();
+            Lib\Shell::message(
+                "SUCCESS: Auth token disabled for user '" . $author->get("username") . "'",
+                false, true, "green"
+            );
+
+            // Now that the token is disabled, there is no point continuing
+            exit(0);
+        }
+
+        if($author->get('auth_token_active') != 'yes') {
+            Lib\Shell::warning("Auth token is disbled for this user. Nothing to show.");
+            exit(0);
+        }
+
+        Lib\Shell::message(
+            "Auth token for '" . $author->get("username") . "' is: " . Symphony::Author()->createAuthToken(),
+            false, true, "green"
+        );
+    }
+}
