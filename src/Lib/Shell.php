@@ -86,12 +86,25 @@ class Shell extends \Symphony
         return false;
     }
 
-    public static function message($string, $includeDate = true, $addNewLine = true)
+    public static function message($string, $includeDate = true, $addNewLine = true, $foregroundColour = null, $backgroundColour = null)
     {
         return (new Message($string))
             ->prependDate($includeDate)
             ->dateFormat('G:i:s > ')
             ->appendNewLine($addNewLine)
+            ->foreground($foregroundColour)
+            ->background($backgroundColour)
             ->display();
+    }
+
+    public static function error($string, $exit=true) {
+        self::message("ERROR: $string", false, true, "red");
+        if($exit == true) {
+            exit(1);
+        }
+    }
+
+    public static function warning($string) {
+        self::message("WARNING: $string", false, true, "yellow");
     }
 }
