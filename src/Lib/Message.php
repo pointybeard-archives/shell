@@ -9,7 +9,7 @@ class Message
     private $prependDate = false;
     private $dateFormat = null;
     private $appendNewLine = true;
-    
+
     // Credit to JR from http://www.if-not-true-then-false.com/
     // for the code reponsible for colourising the messages
     private static $foregroundColours = [
@@ -41,7 +41,7 @@ class Message
         'cyan' => '46',
         'light gray' => '47',
     ];
-    
+
     public function __get($name)
     {
         return $this->$name;
@@ -54,49 +54,49 @@ class Message
         // Seed the date format
         $this->dateFormat("H:i:s > ");
     }
-    
+
     public function message($message)
     {
         $this->message = $message;
         return $this;
     }
-    
+
     public function foreground($colour)
     {
-        if (!array_key_exists($colour, self::$foregroundColours)) {
+        if (!is_null($colour) && !array_key_exists($colour, self::$foregroundColours)) {
             throw new \Exception('No such foreground colour `'.$colour.'`');
         }
         $this->foreground = $colour;
         return $this;
     }
-    
+
     public function background($colour)
     {
-        if (!array_key_exists($colour, self::$backgroundColours)) {
+        if (!is_null($colour) && !array_key_exists($colour, self::$backgroundColours)) {
             throw new \Exception('No such background colour `'.$colour.'`');
         }
         $this->background = $colour;
         return $this;
     }
-    
+
     public function prependDate($prependDate)
     {
         $this->prependDate = $prependDate;
         return $this;
     }
-    
+
     public function dateFormat($format)
     {
         $this->dateFormat = $format;
         return $this;
     }
-    
+
     public function appendNewLine($appendNewLine)
     {
         $this->appendNewLine = $appendNewLine;
         return $this;
     }
-    
+
     public function display($target=STDOUT)
     {
         $message = null;
@@ -108,7 +108,7 @@ class Message
         if (!is_null($this->background)) {
             $message .= "\e[" . self::$backgroundColours[$this->background] . "m";
         }
- 
+
         // Add string and end coloring
         $message .=  $this->message . "\033[0m";
 
