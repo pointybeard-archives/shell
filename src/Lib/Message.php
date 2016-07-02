@@ -32,14 +32,23 @@ class Message
     ];
 
     private static $backgroundColours = [
-        'black' => '40',
-        'red' => '41',
-        'green' => '42',
-        'yellow' => '43',
-        'blue' => '44',
-        'magenta' => '45',
-        'cyan' => '46',
-        'light gray' => '47',
+        'default'       => '49',
+        'black'         => '40',
+        'red'           => '41',
+        'green'         => '42',
+        'yellow'        => '43',
+        'blue'          => '44',
+        'magenta'       => '45',
+        'cyan'          => '46',
+        'light gray'    => '47',
+        'dark gray'     => '100',
+        'light red'     => '101',
+        'light green'   => '102',
+        'light yellow'  => '103',
+        'light blue'    => '104',
+        'light magenta' => '105',
+        'light cyan'    => '106',
+        'white'         => '107',
     ];
 
     public function __get($name)
