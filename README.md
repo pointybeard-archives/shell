@@ -114,7 +114,7 @@ From within the `run()` method, you have full access to the Symphony core framew
 
 You can secure your commands so that anyone using it must provide Symphony user credentials. To do this, instead of implementing `Symphony\Shell\Lib\Interfaces\Command`, extend `Symphony\Shell\Lib\AuthenticatedCommand`. When you command is run, Shell will notice and force the user to provide a authentication with `-u` or `-t`.
 
-When extending `AuthenticatedCommand`, you must provide an `authenticate()` method in your command. The simplest way is to use the `hasRequiresAuthenticationTrait` trait. It includes a boilerplate `authenticate()` method and generally is more than adequate. It will check if the user is logged in, and throw an `AuthenticationRequiredException` if they are not.
+When extending `AuthenticatedCommand`, you must provide an `authenticate()` method in your command. The simplest way is to use the `hasRequiresAuthenticationTrait` trait. It includes a boilerplate `authenticate()` method and generally is more than adequate. It will check if the user is logged in, request username and password if they are not, and throw an `AuthenticationRequiredException` if login ultimately fails.
 
 Here is the same 'test' command from above, but this time it requires authentication:
 
