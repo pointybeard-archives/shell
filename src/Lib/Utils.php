@@ -33,8 +33,11 @@ class Utils
         ));
 
         do {
-            $prompt->display();
-            
+            $prompt
+                ->appendNewLine(false)
+                ->display()
+            ;
+
             if ($silent) {
                 $command = "/usr/bin/env bash -c 'read -s in && echo \$in'";
                 $input = shell_exec($command);
