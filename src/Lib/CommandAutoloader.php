@@ -14,7 +14,7 @@ final class CommandAutoloader
             }
 
             $path = WORKSPACE . DIRECTORY_SEPARATOR . "bin";
-            $file = str_replace('\\', '/', $matches[1]) . ".php";
+            $file = str_replace('\\', '/', $matches[1]);
             if (is_readable($path.DIRECTORY_SEPARATOR.$file)) {
                 require $path.DIRECTORY_SEPARATOR.$file;
             }
