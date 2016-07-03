@@ -95,14 +95,28 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
         }
     }
 
-    $path = EXTENSIONS . '/' . $extension . '/bin/'. $command;
-    if ($path == __FILE__) {
+    // Build the full path to the command. Switch on the 'extension' part
+    // and check if it is 'workspace'
+    $commandPath = sprintf(
+        "%s/bin/%s",
+        ($extension == 'workspace' ? WORKSPACE : EXTENSIONS . "/{$extension}"),
+        $command
+    );
+
+    if ($commandPath == __FILE__) {
         throw new Exceptions\ShellException("Cannot run 'symphony' as shell command.");
-    } elseif (!file_exists($path) || !is_readable($path)) {
+    } elseif (!file_exists($commandPath) || !is_readable($commandPath)) {
         throw new Exceptions\ShellException("Specified command file, '{$extension}/bin/{$command}', is either non-existent or unreadable.");
     }
 
-    $class = "\Symphony\Shell\Command\\$extension\\$command";
+    // Build the class path (including namespace)
+    $class = sprintf(
+        "\Symphony\Shell\Command\\%s\\%s",
+        ($extension == 'workspace' ? 'Workspace' : $extension),
+        $command
+    );
+
+    // Get an instance of the command class
     $obj = new $class;
 
     // User has specified a command, and wants usage for that command.
