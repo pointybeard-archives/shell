@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0]
+## [2.0.0] - 2016-07-03
 - Added more background colours to Message class
 - Added 'token' command. Allows enabling, disabling and retrieval of author tokens
 - Added `Shell::error()` and `Shell::warning()` convenience methods
@@ -26,11 +26,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated autoloader to look in `workspace/bin/` folder (#3)
 - Using PSR4 autoloader instead of classmap
 
-## [1.0.4]
+## [1.0.4] - 2016-04-08
 #### Fixed
 - Fixed namespace for Command interface
 
-## [1.0.3]
+## [1.0.3] - 2016-04-08
 #### Fixed
 - Fixed path to the Autoloader. Removed extra : character from password prompt
 
@@ -41,7 +41,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Added Message class which support coloured output
 
-## [1.0.2]
+## [1.0.2] - 2015-06-05
 #### Fixed
 - Fixed autoloader. It was referencing old class name when calling `spl_autoload_register()`
 - Fixed the test command
@@ -56,13 +56,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added `--token` and `--username` to possible arguments
 - Added `.gitignore`
 
-## [1.0.1] - 2009-08-14
+## [1.0.1] - 2015-04-03
 #### Added
 - Added composer autoloader
 - Added shell-args package
 - Added Utils::promptForInput() which supports silent input capturing (password will no longer echo to the display when using `-u`).
 
-## [1.0.0] - 2009-08-14
+## [1.0.0] - 2014-09-23
 #### Added
 - Checked compatibility with Symphony 2.4+
 - Using namespaces.
@@ -72,11 +72,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Using SPL autoloader for all extension classes and loading commands from other extensions
 - Updated argument structure. Requires -c and -e before the command and extension values
 
-## [0.4.0] - 2009-08-14
+## [0.4.0] - 2012-08-10
 #### Added
 - Added support for Symphony 2.3.x
 
-## [0.3.0] - 2009-08-14
+## [0.3.0] - 2009-08-18
 #### Fixed
 - Fixed bug that ignored the `--usage` flag
 

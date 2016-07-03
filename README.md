@@ -142,6 +142,18 @@ class Test extend Lib\AuthenticatedCommand
 }
 ```
 
+## Multiple Symphony installations on the same Host
+
+Note that if you follow the "Optional Steps" above, running `symphony` will always be in the context of that one particular installation.
+
+If you run multiple sites across multiple installations of Symphony, remember that the Shell extension will work with only the installation of Symphony it itself was installed and enabled on.
+
+A workaround to this is to use the symlink method and namespace each install.
+
+For example, you have two sites "Banana" and "Apple". Both are separate installations of Symphony with their own databases. Symlink them using `ln -s /path/to/banana/extension/shell/bin/symphony /usr/local/sbin/symphony-banana` and `ln -s /path/to/banana/extension/shell/bin/symphony /usr/local/sbin/symphony-apple`. Now you can use this shell extension for both and know you are always in the correct context (`> symphony-banana` and `> symphony-apple`).
+
+In the future there might be better support for running a single shell instance across all Symphony installations on a host.
+
 ## Support
 
 If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/pointybeard/shell/issues),
