@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.0] - 2016-07-03
+#### Added
+- The hasRequiresAuthenticationTrait trait will now prompt for username and password if none was provided.
 - Added more background colours to Message class
 - Added 'token' command. Allows enabling, disabling and retrieval of author tokens
 - Added `Shell::error()` and `Shell::warning()` convenience methods
@@ -24,7 +26,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Move `ShellException` into `Exceptions/` folder.
 - Moved `Lib/` into `src/`.
 - Updated autoloader to look in `workspace/bin/` folder (#3)
+- Updated `symphony` command to support loading a command from workspace/bin/ (#3)
 - Using PSR4 autoloader instead of classmap
+
+#### Fixed
+- Fixed extra new line appearing when requiring input.
+- Fixed workspace command autoloader code. Was incorrectly adding .php to the end of everything
 
 ## [1.0.4] - 2016-04-08
 #### Fixed
