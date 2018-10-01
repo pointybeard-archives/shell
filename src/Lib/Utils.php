@@ -18,7 +18,7 @@ class Utils
      *                        Turns off echoing of input to CLI. Useful for passwords. Only works if bash is avilable.
      * @return string
      */
-    public static function promptForInput($prompt, $silent = false, $default = null, \Closure $validator = null)
+    public static function promptForInput($prompt, $silent = false, $default = null, \Closure $validator = null, $character=":")
     {
         if ($silent == true && !self::canInvokeBash()) {
             throw new \Exception("bash cannot be invoked from PHP. 'silent' flag cannot be used.");
@@ -29,7 +29,10 @@ class Utils
         }
 
         $prompt->message(sprintf(
-            "%s%s: ", $prompt->message, (!is_null($default) ? " [{$default}]" : null)
+            "%s%s%s ",
+            $prompt->message,
+            (!is_null($default) ? " [{$default}]" : null),
+            $character
         ));
 
         do {
