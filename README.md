@@ -1,7 +1,7 @@
 # Shell Extension for Symphony CMS
 
-- Version: v2.0.0
-- Date: July 3 2016
+- Version: v2.0.1
+- Date: October 7 2018
 - [Release notes](https://github.com/pointybeard/shell/blob/master/CHANGELOG.md)
 - [GitHub repository](https://github.com/pointybeard/shell)
 
@@ -51,13 +51,13 @@ or, if you followed the "Optional Setup" above, just
 ### Getting Started
 
 The Shell extension looks for commands in the `bin/` folder of extensions you have installed, and also in `workspace/bin/`. You can see a list of commands by running `symphony` without any arguments. A list like this will be displayed:
-
+```
     Below is a list of all available commands. (use --usage for details on
     executing individual commands):
 
        shell/hello
        shell/token
-
+```
 At any time you can use `--usage`, `--help` or `-h` to get help. If you have also specified a command (see below), you will get help for that particular command instead.
 
 Use the `-c` or `--command` argument to run a particular command. The value provided is always `[extension]/[command]` or `[workspace]/[command]`. This extension comes with two commands out of the box: `hello` and `token`.
@@ -67,10 +67,10 @@ To run the `hello` command use the following:
     symphony -c shell/hello
 
 You should see output like this:
-
+```
     Hello! Here are the arguments you passed me.
     0: 'c' => 'shell/hello'
-
+```
 ### Authentication
 
 Some commands may require you are authenticated before you use them. To do this, either provide the name of the user you want to authenticate as with `-u <username>` or the auth token of that user with `-t <token>`. When using `-u`, you will be prompted to enter your password.
@@ -148,11 +148,20 @@ Note that if you follow the "Optional Steps" above, running `symphony` will alwa
 
 If you run multiple sites across multiple installations of Symphony, remember that the Shell extension will work with only the installation of Symphony it itself was installed and enabled on.
 
-A workaround to this is to use the symlink method and namespace each install.
+A solution is to place the Shell extension folder outside of the Symphony CMS install, symlink the it into each `extensions/` folder per install of Symphony, and provide the  path to Symphony at run-time with `$SYMPHONY_DOCROOT`.
 
-For example, you have two sites "Banana" and "Apple". Both are separate installations of Symphony with their own databases. Symlink them using `ln -s /path/to/banana/extension/shell/bin/symphony /usr/local/sbin/symphony-banana` and `ln -s /path/to/banana/extension/shell/bin/symphony /usr/local/sbin/symphony-apple`. Now you can use this shell extension for both and know you are always in the correct context (`> symphony-banana` and `> symphony-apple`).
+E.g.
 
-In the future there might be better support for running a single shell instance across all Symphony installations on a host.
+One install of Symphony is called banana and another called apple. The same shell extension folder, which is in `~/source` is symlinked accordingly into `extensions` folder.
+```
+    ## ln -s ~/source/shell /var/www/symphony-banana/extensions/
+    SYMPHONY_DOCROOT=/var/www/symphony-banana symphony
+
+    ## ln -s ~/source/shell /var/www/symphony-banana/extensions/
+    SYMPHONY_DOCROOT=/var/www/symphony-apple symphony
+```
+
+Using `SYMPHONY_DOCROOT` like this gives the Shell extension context and will load up the correct install of Symphony at run-time.
 
 ## Support
 

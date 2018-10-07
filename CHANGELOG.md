@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1] - 2018-10-07
+#### Added
+- Allowing the user to overload `DOCROOT` at run-time with `SYMPHONY_DOCROOT` environment variable (Closes #6).
+
+#### Changes
+- Added checks to make sure composer autoloader exists and display nice message it it cannot be located (Closes #5)
+- Updated `Utils::promptForInput()` to allow setting of the prompt character. Default is still colon (:)
+
+
 ## [2.0.0] - 2016-07-03
 #### Added
 - The hasRequiresAuthenticationTrait trait will now prompt for username and password if none was provided.
@@ -105,7 +114,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Initial release
 
-[Unreleased]: https://github.com/pointybeard/shell/compare/v2.0.0...integration
+[Unreleased]: https://github.com/pointybeard/shell/compare/v2.0.1...integration
+[2.0.1]: https://github.com/pointybeard/shell/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/pointybeard/shell/compare/v1.0.4...v2.0.0
 [1.0.4]: https://github.com/pointybeard/shell/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/pointybeard/shell/compare/v1.0.2...v1.0.3
