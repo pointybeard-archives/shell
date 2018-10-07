@@ -5,7 +5,35 @@ use Symphony\Shell\Lib;
 use Symphony\Shell\Lib\Exceptions;
 use pointybeard\ShellArgs\Lib as ShellArgs;
 
-define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
+define(
+    'DOCROOT',
+    // #6 - DOCROOT can be set via the SYMPHONY_DOCROOT environment, so we need to
+    // listen for that and use it instead
+    getenv('SYMPHONY_DOCROOT') != false
+        ? getenv('SYMPHONY_DOCROOT')
+        : rtrim(realpath(dirname(__FILE__) . '/../../../'), '/')
+);
+
+try{
+
+    // #6 - Make sure the DOCROOT folder seems okay
+    if(!file_exists(DOCROOT . '/symphony/lib/core/class.symphony.php')) {
+        throw new \Exception(sprintf(
+            "DOCROOT is set to \"%s\" but there doesn't appear to be an install of Symphony CMS at that location. Did you try setting it using \$SYMPHONY_DOCROOT?", DOCROOT
+        ));
+
+    // #5 - make sure the composer autoload file exists
+    } elseif(!file_exists(__DIR__ . '/../vendor/autoload.php')) {
+        throw new \Exception(
+            "The composer autoloader doesn't appear to exist. Did you run 'composer update' in the Shell extension folder?"
+        );
+    }
+
+} catch (\Exception $ex) {
+    printf("\033[0;31m** Symphony Shell Fatal Error ** \r\nSomething doesn't look right. %s\r\n\033[0m", $ex->getMessage());
+    exit;
+}
+
 define('DOMAIN', null);
 
 // Emulate HTTP_HOST so defines.php doesn't throw a notice
@@ -79,12 +107,14 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
     // Use has provided both -t and -u. This makes no sense.
     if ($args->find(['u', 'username']) !== false && $args->find(['t', 'token']) !== false) {
         throw new Exceptions\ShellException("Does not make sense to specify both -t and -u.");
+
     // Auhenticate by token
     } elseif ($args->find(['t', 'token']) !== false) {
         Lib\Shell::instance()->loginFromToken($args->find(['t', 'token'])->value());
         if (!Lib\Shell::instance()->isLoggedIn()) {
             throw new Exceptions\ShellException("Authentication token supplied was invalid.");
         }
+
     // Authenticate by usename and password prompt
     } elseif ($args->find(['u', 'username']) !== false) {
         $password = Lib\Utils::promptForInput("Password", true);
@@ -105,6 +135,7 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
 
     if ($commandPath == __FILE__) {
         throw new Exceptions\ShellException("Cannot run 'symphony' as shell command.");
+
     } elseif (!file_exists($commandPath) || !is_readable($commandPath)) {
         throw new Exceptions\ShellException("Specified command file, '{$extension}/bin/{$command}', is either non-existent or unreadable.");
     }
@@ -134,6 +165,7 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
             throw new Exceptions\ShellException($e->getMessage(), 0, $e);
         }
     }
+
 } catch (Exceptions\ShellException $e) {
     Lib\Shell::error($e->getMessage());
 }
