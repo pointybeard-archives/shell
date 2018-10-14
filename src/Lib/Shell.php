@@ -46,7 +46,7 @@ class Shell extends \Symphony
         return $this->{"_{$name}"};
     }
 
-    public static function message($string, $includeDate = true, $addNewLine = true, $foregroundColour = null, $backgroundColour = null)
+    public static function message($string, $includeDate=true, $addNewLine=true, $foregroundColour=null, $backgroundColour=null, $target=STDOUT)
     {
         return (new Message($string))
             ->prependDate($includeDate)
@@ -54,12 +54,12 @@ class Shell extends \Symphony
             ->appendNewLine($addNewLine)
             ->foreground($foregroundColour)
             ->background($backgroundColour)
-            ->display();
+            ->display($target);
     }
 
-    public static function error($string, $exit = true)
+    public static function error($string, $exit=true)
     {
-        self::message("ERROR: $string", false, true, "red");
+        self::message("ERROR: $string", false, true, "red", null, STDERR);
         if ($exit == true) {
             exit(1);
         }
