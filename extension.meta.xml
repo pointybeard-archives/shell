@@ -9,31 +9,43 @@
     </types>
     <authors>
         <author>
-            <name github="pointybeard" symphony="team">Alistair Kearney</name>
-            <website>http://alistairkearney.com</website>
+            <name github="pointybeard" symphony="team">Alannah Kearney</name>
+            <website>http://alannahkearney.com</website>
         </author>
     </authors>
     <releases>
+        <release version="2.0.2" date="2018-10-15" min="2.7">
+            - Added check to ensure Shell extension is enabled before proceeding. Throws ShellException if it isn't enabled (Fixes #4).
+            - Added __toString() method and moved some code from display().
+            - Removed the login() method since original limitation introduced by Symphony::login() is gone.
+            - Simplified authentication prompt message.
+            - Ran php-cs-fixer over code base to ensure PSR2 compliant formatting.
+        </release>
+        <release version="2.0.1" date="2018-10-07" min="2.7">
+            - Allowing the user to overload DOCROOT at run-time with SYMPHONY_DOCROOT environment variable (Closes #6).
+            - Added checks to make sure composer autoloader exists and display nice message it it cannot be located (Closes #5)
+            - Updated Utils::promptForInput() to allow setting of the prompt character. Default is still colon (:)
+        </release>
         <release version="2.0.0" date="2016-07-03" min="2.6">
             - Added more background colours to Message class
             - Added 'token' command. Allows enabling, disabling and retrieval of author tokens
-            - Added `Shell::error()` and `Shell::warning()` convenience methods
-            - Added `fetch()` method to the command autoloader. Simplifies getting a list of all available commands in the system.
+            - Added Shell::error() and Shell::warning() convenience methods
+            - Added fetch() method to the command autoloader. Simplifies getting a list of all available commands in the system.
             - Removed need for 'extension' or 'e' flag.
-            - Calling commands authenticate method if it extends `AuthenticatedCommand`.
+            - Calling commands authenticate method if it extends AuthenticatedCommand.
             - Using Message class to display errors.
-            - Removed `listCommands()` method
-            - Added additional call to `restore_error_handler`. In version of Symphony prior to 2.7, the Exception and Error handlers are set twice.
+            - Removed listCommands() method
+            - Added additional call to restore_error_handler. In version of Symphony prior to 2.7, the Exception and Error handlers are set twice.
             - Added exception handling around constructor to avoid problems with sessions already being started (not relevant to shell)
-            - Added `AuthenticatedCommand` class and 'hasRequiresAuthenticationTrait.php' trait to simplify the process of requiring authentication for a command.
-            - added new exception `AuthenticationRequiredException` which supports these new classes.
+            - Added AuthenticatedCommand class and 'hasRequiresAuthenticationTrait.php' trait to simplify the process of requiring authentication for a command.
+            - added new exception AuthenticationRequiredException which supports these new classes.
             - Renamed 'test' command to 'hello'. No longer requires authentication
-            - Using `Shell::error()` when trapping a ShellException
-            - `Message::background()` and `Message::foreground()` now support `NULL`.
-            - Updated example command to use `AuthenticatedCommand` and `hasRequiresAuthenticationTrait`
-            - Move `ShellException` into `Exceptions/` folder.
-            - Moved `Lib/` into `src/`.
-            - Updated autoloader to look in `workspace/bin/` folder (#3)
+            - Using Shell::error() when trapping a ShellException
+            - Message::background() and Message::foreground() now support NULL.
+            - Updated example command to use AuthenticatedCommand and hasRequiresAuthenticationTrait
+            - Move ShellException into Exceptions/ folder.
+            - Moved Lib/ into src/.
+            - Updated autoloader to look in workspace/bin/ folder (#3)
             - Using PSR4 autoloader instead of classmap
         </release>
         <release version="1.0.4" date="2016-04-08" min="2.6">

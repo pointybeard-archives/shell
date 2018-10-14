@@ -1,7 +1,7 @@
 # Shell Extension for Symphony CMS
 
-- Version: v2.0.1
-- Date: October 7 2018
+- Version: v2.0.2
+- Date: October 14 2018
 - [Release notes](https://github.com/pointybeard/shell/blob/master/CHANGELOG.md)
 - [GitHub repository](https://github.com/pointybeard/shell)
 
@@ -152,12 +152,12 @@ A solution is to place the Shell extension folder outside of the Symphony CMS in
 
 E.g.
 
-One install of Symphony is called banana and another called apple. The same shell extension folder, which is in `~/source` is symlinked accordingly into `extensions` folder.
+One install of Symphony is called banana and another called apple. The same shell extension folder, which is in `~/source` is symlink'd accordingly into the `extensions` folder.
 ```
     ## ln -s ~/source/shell /var/www/symphony-banana/extensions/
     SYMPHONY_DOCROOT=/var/www/symphony-banana symphony
 
-    ## ln -s ~/source/shell /var/www/symphony-banana/extensions/
+    ## ln -s ~/source/shell /var/www/symphony-apple/extensions/
     SYMPHONY_DOCROOT=/var/www/symphony-apple symphony
 ```
 

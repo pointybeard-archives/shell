@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+**View all [Unreleased] changes here**
+
+## [2.0.2] - 2018-10-14
+#### Added
+- Added check to ensure Shell extension is enabled before proceeding. Throws `ShellException` if it isn't enabled (Fixes #4).
+- Added `__toString()` method and moved some code from display().
+ 
+#### Changed
+- Removed the login() method since original limitation introduced by `Symphony::login()` is gone.
+- Simplified authentication prompt message.
+- Ran `php-cs-fixer` over code base to ensure PSR2 compliant formatting.
+
 ## [2.0.1] - 2018-10-07
 #### Added
 - Allowing the user to overload `DOCROOT` at run-time with `SYMPHONY_DOCROOT` environment variable (Closes #6).
@@ -9,7 +21,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Changes
 - Added checks to make sure composer autoloader exists and display nice message it it cannot be located (Closes #5)
 - Updated `Utils::promptForInput()` to allow setting of the prompt character. Default is still colon (:)
-
 
 ## [2.0.0] - 2016-07-03
 #### Added
@@ -114,7 +125,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Initial release
 
-[Unreleased]: https://github.com/pointybeard/shell/compare/v2.0.1...integration
+[Unreleased]: https://github.com/pointybeard/shell/compare/v2.0.2...integration
+[2.0.2]: https://github.com/pointybeard/shell/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/pointybeard/shell/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/pointybeard/shell/compare/v1.0.4...v2.0.0
 [1.0.4]: https://github.com/pointybeard/shell/compare/v1.0.3...v1.0.4
