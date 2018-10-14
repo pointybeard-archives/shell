@@ -14,21 +14,21 @@ define(
         : rtrim(realpath(dirname(__FILE__) . '/../../../'), '/')
 );
 
-try{
+try {
 
     // #6 - Make sure the DOCROOT folder seems okay
-    if(!file_exists(DOCROOT . '/symphony/lib/core/class.symphony.php')) {
+    if (!file_exists(DOCROOT . '/symphony/lib/core/class.symphony.php')) {
         throw new \Exception(sprintf(
-            "DOCROOT is set to \"%s\" but there doesn't appear to be an install of Symphony CMS at that location. Did you try setting it using \$SYMPHONY_DOCROOT?", DOCROOT
+            "DOCROOT is set to \"%s\" but there doesn't appear to be an install of Symphony CMS at that location. Did you try setting it using \$SYMPHONY_DOCROOT?",
+            DOCROOT
         ));
 
     // #5 - make sure the composer autoload file exists
-    } elseif(!file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    } elseif (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
         throw new \Exception(
             "The composer autoloader doesn't appear to exist. Did you run 'composer update' in the Shell extension folder?"
         );
     }
-
 } catch (\Exception $ex) {
     printf("\033[0;31m** Symphony Shell Fatal Error ** \r\nSomething doesn't look right. %s\r\n\033[0m", $ex->getMessage());
     exit;
@@ -56,6 +56,36 @@ try {
 
     // Make sure the Shell has been initialised
     $engine = Lib\Shell::instance();
+
+    // 4 - Check this extension has status of EXTENSION_ENABLED. If not,
+    // throw a ShellException exception
+    $status = array_pop(
+        \ExtensionManager::fetchStatus(\ExtensionManager::about("shell"))
+    );
+
+    if ($status != \Extension::EXTENSION_ENABLED) {
+        switch ($status) {
+            case \Extension::EXTENSION_NOT_INSTALLED:
+                $message = "Did you install the Shell extension?";
+                break;
+
+            case \Extension::EXTENSION_REQUIRES_UPDATE:
+                $message = "Shell extension requires updating.";
+                break;
+
+            case \Extension::EXTENSION_NOT_COMPATIBLE:
+                $message = "Shell extension is not compatible with this version of Symphony CMS.";
+                break;
+
+            case \Extension::EXTENSION_DISABLED:
+            default:
+                $message = "Did you enable the Shell extension?";
+                break;
+        }
+        throw new Exceptions\ShellException(
+            "Unable invoke the Symphony Shell. {$message}"
+        );
+    }
 
     $args = new ShellArgs\ArgumentIterator();
 
@@ -97,7 +127,10 @@ try {
 executing individual commands):" . PHP_EOL . PHP_EOL;
 
         array_map(
-            function ($c) { echo "   {$c}"  . PHP_EOL; return; },
+            function ($c) {
+                echo "   {$c}"  . PHP_EOL;
+                return;
+            },
             Lib\CommandAutoloader::fetch()
         );
         echo PHP_EOL;
@@ -135,8 +168,7 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
 
     if ($commandPath == __FILE__) {
         throw new Exceptions\ShellException("Cannot run 'symphony' as shell command.");
-
-    } elseif (!file_exists($commandPath) || !is_readable($commandPath)) {
+    } elseif (!is_readable($commandPath)) {
         throw new Exceptions\ShellException("Specified command file, '{$extension}/bin/{$command}', is either non-existent or unreadable.");
     }
 
@@ -165,7 +197,6 @@ executing individual commands):" . PHP_EOL . PHP_EOL;
             throw new Exceptions\ShellException($e->getMessage(), 0, $e);
         }
     }
-
 } catch (Exceptions\ShellException $e) {
     Lib\Shell::error($e->getMessage());
 }
