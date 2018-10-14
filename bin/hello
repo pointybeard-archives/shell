@@ -10,8 +10,8 @@ class Hello implements Lib\Interfaces\Command
     {
         return "    usage for 'shell/hello'
 
-    This command that echos all argument provided and mostly serves as an
-    example.
+    This command echos all argument provided and serves only as an
+    example of how to write a basic command.
 
     examples:
         symphony -c shell/hello
