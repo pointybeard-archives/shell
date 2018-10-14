@@ -14,7 +14,7 @@ trait hasRequiresAuthenticationTrait
         if (!Lib\Shell::instance()->isLoggedIn()) {
 
             // Let the user know they are not authenticated.
-            (new Lib\Message("NOTICE: This command requires authentication. Please provide credentials below."))
+            (new Lib\Message("NOTICE: This command requires authentication."))
                 ->foreground("yellow")
                 ->prependDate(false)
                 ->appendNewLine(true)
